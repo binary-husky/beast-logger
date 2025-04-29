@@ -9,6 +9,22 @@ from rich.table import Table
 from rich.text import Text
 from functools import partial
 
+
+custom_format = (
+    "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | "
+    "\"{name}/{function}\", line {line} - {message}"
+)
+
+def formatter_with_clip(record):
+    # Note this function returns the string to be formatted, not the actual message to be logged
+    # record["extra"]["serialized"] = "555555"
+    max_len = 24
+    record['function_x'] = record['function'].center(max_len)
+    if len(record['function_x']) > max_len:
+        record['function_x'] = ".." + record['function_x'][-(max_len-2):]
+    record['line_x'] = str(record['line']).ljust(3)
+    return '<green>{time:HH:mm}</green> | <cyan>{function_x}</cyan>:<cyan>{line_x}</cyan> | <level>{message}</level>\n'
+
 def register_logger(mods=[], non_console_mods=[]):
     import os
     import sys
@@ -24,6 +40,7 @@ def register_logger(mods=[], non_console_mods=[]):
         return False
 
     logger.remove()
+    # logger.add(sys.stderr, format=formatter_with_clip, colorize=True, enqueue=True, filter=is_not_non_console_mod)
     logger.add(sys.stderr, colorize=True, enqueue=True, filter=is_not_non_console_mod)
     regular_log_path = os.path.join("logs", "regular", "regular.log")
     logger.add(regular_log_path, rotation="50 MB", enqueue=True, filter=is_not_non_console_mod)
@@ -58,9 +75,9 @@ def print_dict(d, header="", mod="", narrow=False) -> None:
     panel = Panel(table, expand=True, title=header, border_style="bold white")
     result = rich2text(panel, narrow)
     if mod:
-        logger.bind(**{mod: True}).info(result)
+        logger.bind(**{mod: True}).opt(depth=1).info(result)
     else:
-        logger.info(result)
+        logger.opt(depth=1).info(result)
     return result
 
 def print_dictofdict(dod, header="", mod="", narrow=False) -> None:
@@ -81,9 +98,9 @@ def print_dictofdict(dod, header="", mod="", narrow=False) -> None:
     panel = Panel(table, expand=True, title=header, border_style="bold white")
     result = rich2text(panel, narrow)
     if mod:
-        logger.bind(**{mod: True}).info(result)
+        logger.bind(**{mod: True}).opt(depth=1).info(result)
     else:
-        logger.info(result)
+        logger.opt(depth=1).info(result)
     return result
 
 def append_to_jsonl(json_dat):

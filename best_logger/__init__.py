@@ -25,7 +25,7 @@ def formatter_with_clip(record):
     record['line_x'] = str(record['line']).ljust(3)
     return '<green>{time:HH:mm}</green> | <cyan>{function_x}</cyan>:<cyan>{line_x}</cyan> | <level>{message}</level>\n'
 
-def register_logger(mods=[], non_console_mods=[]):
+def register_logger(mods=[], non_console_mods=[], base_log_path="logs"):
     import os
     import sys
 
@@ -42,12 +42,12 @@ def register_logger(mods=[], non_console_mods=[]):
     logger.remove()
     # logger.add(sys.stderr, format=formatter_with_clip, colorize=True, enqueue=True, filter=is_not_non_console_mod)
     logger.add(sys.stderr, colorize=True, enqueue=True, filter=is_not_non_console_mod)
-    regular_log_path = os.path.join("logs", "regular", "regular.log")
+    regular_log_path = os.path.join(base_log_path, "regular", "regular.log")
     logger.add(regular_log_path, rotation="50 MB", enqueue=True, filter=is_not_non_console_mod)
     for mod in (mods + non_console_mods):
         def debug(record, mod):
             return record["extra"].get(mod) == True
-        log_path = os.path.join("logs", mod, f"{mod}.log")
+        log_path = os.path.join(base_log_path, mod, f"{mod}.log")
         logger.add(log_path, rotation="50 MB", enqueue=True, filter=partial(debug, mod=mod))
     return
 

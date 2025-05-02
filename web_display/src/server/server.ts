@@ -121,5 +121,5 @@ fs.watch(logsDir, (eventType, filename) => {
 const FPORT = process.env.FPORT || 9999;
 
 server.listen(FPORT, () => {
-  console.log(`Server running on port ${FPORT}`);
+  console.log(`Server running on port http://127.0.0.1:${FPORT}`);
 });

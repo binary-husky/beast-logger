@@ -1,5 +1,5 @@
 {
-  "name": "my-tsx-project",
+  "name": "logger-web-viewer",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -26,6 +26,7 @@
     "ws": "^8.18.1"
   },
   "scripts": {
+
     "all:start": "npm run start & npm run server:start",
     "start": "PORT=3333 FPORT=9999 react-scripts start",
     "server:start": "FPORT=9999 node dist/server/server.js",

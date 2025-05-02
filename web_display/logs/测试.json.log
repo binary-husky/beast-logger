@@ -1,0 +1,4 @@
+2025-05-02 22:07:43.023 | INFO     | __main__:<module>:199 - 
+{"header": "这个是Header 1", "color": "#FF88cc", "content": "这是主内容"}
+2025-05-02 22:17:43.023 | INFO     | __main__:<module>:199 - 
+{"header": "这个是Header 2", "color": "#3333cc", "content": "这是主内容"}

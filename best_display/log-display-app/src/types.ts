@@ -5,6 +5,9 @@ export interface LogEntry {
   line: number;
   message: string;
   content: string;
+  color?: string | null;
+  header?: string | null;
+  true_content?: string | null;
 }
 
 export interface LogFile {

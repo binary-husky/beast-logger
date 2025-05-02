@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { Collapse, Button, Pagination } from 'antd';
+import { Collapse, Button, Pagination, Spin } from 'antd';
 import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { LogEntry } from '../types';
 import { sortLogEntries } from '../utils/logParser';
 
 interface LogViewerProps {
   entries: LogEntry[];
+  isLoading: boolean;
 }
 
 const PAGE_SIZE = 50;
 
-const LogViewer: React.FC<LogViewerProps> = ({ entries }) => {
+const LogViewer: React.FC<LogViewerProps> = ({ entries, isLoading }) => {
   const [ascending, setAscending] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -36,9 +37,36 @@ const LogViewer: React.FC<LogViewerProps> = ({ entries }) => {
   };
 
   return (
-    <div style={{ padding: '20px', height: '100vh', overflowY: 'auto' }}>
-      <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Button
+    <div style={{ padding: '20px', height: '100vh', overflowY: 'auto', position: 'relative' }}>
+      {isLoading && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1000,
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          padding: '20px',
+          borderRadius: '8px'
+        }}>
+          <Spin size="large" tip="Reading log file..." />
+        </div>
+      )}
+      {entries.length === 0 && !isLoading ? (
+        <div style={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '16px',
+          color: '#999',
+        }}>
+          当前log文件没有任何有效内容
+        </div>
+      ) : (
+        <>
+          <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Button
           icon={ascending ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
           onClick={() => setAscending(!ascending)}
         >
@@ -55,22 +83,24 @@ const LogViewer: React.FC<LogViewerProps> = ({ entries }) => {
       <Collapse>
           {currentEntries.map((entry, index) => (
               <Collapse.Panel
-                key={`${entry.timestamp}-${index}`}
+                key={`${index} - ${entry.timestamp}`}
                 header={
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: getLevelColor(entry.level) }}>[{entry.level}]</span>
-                    <span>{entry.timestamp}</span>
+                    <span style={{ color: entry.color || getLevelColor(entry.level), fontWeight: 'bold' }}>[{entry.level}]</span>
+                    <span style={{ color: entry.color || getLevelColor(entry.level), fontWeight: 'bold' }}>{entry.header || entry.message}</span>
                     <span>-</span>
-                    <span>{entry.message}</span>
+                    <span>{entry.timestamp}</span>
                   </div>
                 }
               >
                 <pre style={{ margin: 0, whiteSpace: 'pre', overflowX: 'auto' }}>
-                  {entry.content}
+                  {entry.true_content || entry.content}
                 </pre>
               </Collapse.Panel>
           ))}
       </Collapse>
+        </>
+      )}
     </div>
   );
 };

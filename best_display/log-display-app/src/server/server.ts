@@ -30,6 +30,31 @@ const broadcast = (message: any) => {
 };
 
 // API Routes
+// Recursive function to scan for log files
+function scanLogFiles(dir: string): Array<{name: string, path: string, size: number, lastModified: Date}> {
+  const files: Array<{name: string, path: string, size: number, lastModified: Date}> = [];
+  
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    
+    if (entry.isDirectory()) {
+      files.push(...scanLogFiles(fullPath));
+    } else if (entry.isFile() && entry.name.endsWith('.log')) {
+      const stats = fs.statSync(fullPath);
+      files.push({
+        name: entry.name,
+        path: fullPath,
+        size: stats.size,
+        lastModified: stats.mtime
+      });
+    }
+  }
+  
+  return files;
+}
+
 app.get('/api/logs/files', (req, res) => {
   try {
     const dirPath = req.query.path as string;
@@ -44,16 +69,8 @@ app.get('/api/logs/files', (req, res) => {
     if (!dirPath && !fs.existsSync(logsDir)) {
       fs.mkdirSync(logsDir, { recursive: true });
     }
-
-    const files = fs.readdirSync(logsDir)
-      .filter(file => file.endsWith('.log'))
-      .map(file => ({
-        name: file,
-        path: path.join(logsDir, file),
-        size: fs.statSync(path.join(logsDir, file)).size,
-        lastModified: fs.statSync(path.join(logsDir, file)).mtime
-      }));
-
+    console.log(logsDir)
+    const files = scanLogFiles(logsDir);
     res.json(files);
   } catch (error) {
     console.error('Error reading log files:', error);

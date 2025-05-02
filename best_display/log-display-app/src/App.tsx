@@ -11,9 +11,11 @@ function App() {
   const [files, setFiles] = useState<LogFile[]>([]);
   const [selectedFile, setSelectedFile] = useState<LogFile>();
   const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Function to read log file content
   const readLogFile = useCallback(async (file: LogFile) => {
+    setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:3000/api/logs/content?path=${encodeURIComponent(file.path)}`);
       const content = await response.text();
@@ -22,6 +24,8 @@ function App() {
     } catch (error) {
       console.error('Error reading log file:', error);
       setLogEntries([]);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -84,7 +88,7 @@ function App() {
       </Sider>
       <Content>
         {selectedFile ? (
-          <LogViewer entries={logEntries} />
+          <LogViewer entries={logEntries} isLoading={isLoading} />
         ) : (
           <div style={{
             height: '100%',

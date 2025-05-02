@@ -6,6 +6,7 @@ import { LogFile, LogEntry } from './types';
 import { parseLogContent } from './utils/logParser';
 
 const { Sider, Content } = Layout;
+const FPORT = process.env.FPORT || 9999;
 
 function App() {
   const [files, setFiles] = useState<LogFile[]>([]);
@@ -17,7 +18,7 @@ function App() {
   const readLogFile = useCallback(async (file: LogFile) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/logs/content?path=${encodeURIComponent(file.path)}`);
+      const response = await fetch(`http://localhost:${FPORT}/api/logs/content?path=${encodeURIComponent(file.path)}`);
       const content = await response.text();
       const entries = parseLogContent(content);
       setLogEntries(entries);
@@ -33,8 +34,8 @@ function App() {
   const fetchLogFiles = useCallback(async (path?: string) => {
     try {
       const url = path 
-        ? `http://localhost:3000/api/logs/files?path=${encodeURIComponent(path)}`
-        : 'http://localhost:3000/api/logs/files';
+        ? `http://localhost:${FPORT}/api/logs/files?path=${encodeURIComponent(path)}`
+        : `http://localhost:${FPORT}/api/logs/files`;
       const response = await fetch(url);
       const data = await response.json();
       setFiles(data);
@@ -52,7 +53,7 @@ function App() {
     fetchLogFiles(path || undefined);
 
     // Set up WebSocket connection for real-time updates
-    const ws = new WebSocket('ws://localhost:3000/ws');
+    const ws = new WebSocket(`ws://localhost:${FPORT}/ws`);
     
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -79,7 +80,7 @@ function App() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider width={300} theme="light">
+      <Sider width={200} theme="light">
         <LogFileList
           files={files}
           onFileSelect={handleFileSelect}

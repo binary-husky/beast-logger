@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2018",
     "module": "commonjs",
     "outDir": "./dist",
     "rootDir": "./src",
@@ -9,10 +9,13 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "sourceMap": true,
-    "inlineSourceMap": false,
-    "sourceRoot": "${workspaceRoot}/src"
+    "resolveJsonModule": true,
+    "sourceMap": true
   },
-  "include": ["src/server/**/*"],
-  "exclude": ["node_modules", "src/**/*.test.ts"]
+  "include": [
+    "src/server/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "log-display-app",
+  "name": "my-tsx-project",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -26,12 +26,13 @@
     "ws": "^8.18.1"
   },
   "scripts": {
-    "start": "concurrently \"PORT=3001 serve -s build\" \"npm run server\"",
-    "build": "react-scripts build && tsc -p tsconfig.server.json",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "server": "node dist/server/server.js",
-    "dev": "concurrently \"npm start\" \"npm run server\""
+    "all:start": "npm run start & npm run server:start",
+    "start": "PORT=3333 FPORT=9999 react-scripts start",
+    "server:start": "FPORT=9999 node dist/server/server.js",
+
+    "all:build": "npm run build & npm run server:build",
+    "build": "react-scripts build",
+    "server:build": "tsc --project tsconfig.server.json"
   },
   "eslintConfig": {
     "extends": [
@@ -52,6 +53,7 @@
     ]
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2"
   }
 }

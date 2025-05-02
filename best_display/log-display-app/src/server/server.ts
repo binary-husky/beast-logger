@@ -41,7 +41,7 @@ function scanLogFiles(dir: string): Array<{name: string, path: string, size: num
     
     if (entry.isDirectory()) {
       files.push(...scanLogFiles(fullPath));
-    } else if (entry.isFile() && entry.name.endsWith('.log')) {
+    } else if (entry.isFile() && entry.name.endsWith('.json.log')) {
       const stats = fs.statSync(fullPath);
       files.push({
         name: entry.name,
@@ -71,6 +71,8 @@ app.get('/api/logs/files', (req, res) => {
     }
     console.log(logsDir)
     const files = scanLogFiles(logsDir);
+    // sort by last modified date (newest first)
+    files.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
     res.json(files);
   } catch (error) {
     console.error('Error reading log files:', error);

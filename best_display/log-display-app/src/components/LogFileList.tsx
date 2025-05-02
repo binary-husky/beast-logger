@@ -24,7 +24,12 @@ const LogFileList: React.FC<LogFileListProps> = ({ files, selectedFile, onFileSe
         >
           <List.Item.Meta
             title={file.name}
-            description={new Date(file.lastModified).toLocaleString()}
+            description={
+              <div>
+                <div style={{ color: '#666', marginBottom: '4px' }}>{file.path}</div>
+                <div>{new Date(file.lastModified).toLocaleString()}</div>
+              </div>
+            }
           />
         </List.Item>
       )}

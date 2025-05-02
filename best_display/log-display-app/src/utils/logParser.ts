@@ -84,7 +84,7 @@ export function parseLogContent(content: string): LogEntry[] {
       content: contentStr,
       color: jsonData?.color ?? null,
       header: jsonData?.header ?? null,
-      true_content: jsonData?.true_content ?? null
+      true_content: jsonData?.content ?? null
     } as LogEntry);
   }
 

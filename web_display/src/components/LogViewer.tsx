@@ -7,13 +7,21 @@ import { sortLogEntries } from '../utils/logParser';
 interface LogViewerProps {
   entries: LogEntry[];
   isLoading: boolean;
+  onPageChange?: (page: number) => void;
+  totalEntries?: number;
+  currentPage?: number;
 }
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 5;
 
-const LogViewer: React.FC<LogViewerProps> = ({ entries, isLoading }) => {
+const LogViewer: React.FC<LogViewerProps> = ({ 
+  entries, 
+  isLoading, 
+  onPageChange,
+  totalEntries,
+  currentPage = 1
+}) => {
   const [ascending, setAscending] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedEntry, setSelectedEntry] = useState<LogEntry | null>(null);
   const [fontSize, setFontSize] = useState(14);
   const logContentRef = useRef<HTMLPreElement>(null);
@@ -25,8 +33,10 @@ const LogViewer: React.FC<LogViewerProps> = ({ entries, isLoading }) => {
   }, [selectedEntry]);
 
   const sortedEntries = sortLogEntries(entries, ascending);
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const currentEntries = sortedEntries.slice(startIndex, startIndex + PAGE_SIZE);
+
+  const handlePageChange = (page: number) => {
+    onPageChange?.(page);
+  };
 
   const getLevelColor = (level: string) => {
     switch (level) {
@@ -102,14 +112,14 @@ const LogViewer: React.FC<LogViewerProps> = ({ entries, isLoading }) => {
               </div>
         <Pagination
           current={currentPage}
-          total={entries.length}
+          total={totalEntries || entries.length}
           pageSize={PAGE_SIZE}
-          onChange={setCurrentPage}
+          onChange={handlePageChange}
           showSizeChanger={false}
         />
       </div>
       <List
-        dataSource={currentEntries}
+        dataSource={sortedEntries}
         renderItem={(entry, index) => (
           <List.Item
             key={`${index} - ${entry.timestamp}`}

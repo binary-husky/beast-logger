@@ -13,15 +13,27 @@ function App() {
   const [selectedFile, setSelectedFile] = useState<LogFile>();
   const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [totalEntries, setTotalEntries] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const PAGE_SIZE = 5;
 
   // Function to read log file content
-  const readLogFile = useCallback(async (file: LogFile) => {
+  const readLogFile = useCallback(async (file: LogFile, page: number = 1) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:${FPORT}/api/logs/content?path=${encodeURIComponent(file.path)}`);
-      const content = await response.text();
-      const entries = parseLogContent(content);
+      const response = await fetch(
+        `http://localhost:${FPORT}/api/logs/content?` + 
+        `path=${encodeURIComponent(file.path)}&` +
+        `page=${page}&` +
+        `num_entity_each_page=${PAGE_SIZE}`
+      );
+      const data = await response.json();
+      const entries = parseLogContent(data.content);
       setLogEntries(entries);
+      setTotalEntries(data.totalEntries);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Error reading log file:', error);
       setLogEntries([]);
@@ -75,7 +87,8 @@ function App() {
   // Handle file selection
   const handleFileSelect = (file: LogFile) => {
     setSelectedFile(file);
-    readLogFile(file);
+    setCurrentPage(1); // Reset to first page when selecting a new file
+    readLogFile(file, 1);
   };
 
   return (
@@ -89,7 +102,18 @@ function App() {
       </Sider>
       <Content>
         {selectedFile ? (
-          <LogViewer entries={logEntries} isLoading={isLoading} />
+          <LogViewer 
+            entries={logEntries} 
+            isLoading={isLoading}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              if (selectedFile) {
+                readLogFile(selectedFile, page);
+              }
+            }}
+            totalEntries={totalEntries}
+            currentPage={currentPage}
+          />
         ) : (
           <div style={{
             height: '100%',

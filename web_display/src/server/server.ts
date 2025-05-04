@@ -83,7 +83,8 @@ app.get('/api/logs/files', (req, res) => {
 app.get('/api/logs/content', (req, res) => {
   try {
     const filePath = req.query.path as string;
-    
+    const page = parseInt(req.query.page as string) || 1;
+    var numEntitiesPerPage = parseInt(req.query.num_entity_each_page as string) || 50;
     if (!filePath) {
       return res.status(400).json({ error: 'File path is required' });
     }
@@ -95,7 +96,24 @@ app.get('/api/logs/content', (req, res) => {
     }
 
     const content = fs.readFileSync(normalizedPath, 'utf-8');
-    res.send(content);
+    const lines = content.split('\n').filter(line => line.trim());
+    
+    const entityTakeNumLines = 2;
+    // Calculate total number of entries and pages
+    const totalEntries = Math.floor(lines.length / entityTakeNumLines);
+    const totalPages = Math.ceil(totalEntries / numEntitiesPerPage);
+    
+    // Get the slice of entries for the requested page
+    const startIndex = (page - 1) * numEntitiesPerPage * entityTakeNumLines;
+    const endIndex = startIndex + numEntitiesPerPage * entityTakeNumLines;
+    const pageContent = lines.slice(startIndex, endIndex).join('\n');
+
+    res.json({
+      content: pageContent,
+      totalEntries,
+      totalPages,
+      currentPage: page
+    });
   } catch (error) {
     console.error('Error reading log file:', error);
     res.status(500).json({ error: 'Failed to read log file' });

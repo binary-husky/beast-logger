@@ -4,6 +4,7 @@ import LogFileList from './components/LogFileList';
 import LogViewer from './components/LogViewer';
 import { LogFile, LogEntry } from './types';
 import { parseLogContent } from './utils/logParser';
+import pako from 'pako';
 
 const { Sider, Content } = Layout;
 const FPORT = process.env.REACT_APP_FPORT || 9999;
@@ -19,6 +20,24 @@ function App() {
 
   const PAGE_SIZE = 5;
 
+  // Function to decompress gzipped base64 content
+  const decompressContent = (compressedContent: string): string => {
+    try {
+      // Convert base64 to binary array using browser APIs
+      const binaryString = atob(compressedContent);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const decompressed = pako.inflate(bytes, { to: 'string' });
+      return decompressed;
+    } catch (error) {
+      console.error('Error decompressing content:', error);
+      return '';
+    }
+  };
+
   // Function to read log file content
   const readLogFile = useCallback(async (file: LogFile, page: number = 1) => {
     setIsLoading(true);
@@ -30,7 +49,8 @@ function App() {
         `num_entity_each_page=${PAGE_SIZE}`
       );
       const data = await response.json();
-      const entries = parseLogContent(data.content);
+      const decompressedContent = data.compressed ? decompressContent(data.content) : data.content;
+      const entries = parseLogContent(decompressedContent);
       setLogEntries(entries);
       setTotalEntries(data.totalEntries);
       setTotalPages(data.totalPages);

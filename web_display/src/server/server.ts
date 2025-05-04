@@ -4,6 +4,7 @@ import { WebSocketServer } from 'ws';
 import http from 'http';
 import path from 'path';
 import fs from 'fs';
+import zlib from 'zlib';
 
 const app = express();
 const server = http.createServer(app);
@@ -107,9 +108,13 @@ app.get('/api/logs/content', (req, res) => {
     const startIndex = (page - 1) * numEntitiesPerPage * entityTakeNumLines;
     const endIndex = startIndex + numEntitiesPerPage * entityTakeNumLines;
     const pageContent = lines.slice(startIndex, endIndex).join('\n');
+    
+    // Compress the content using gzip
+    const compressedContent = zlib.gzipSync(Buffer.from(pageContent)).toString('base64');
 
     res.json({
-      content: pageContent,
+      content: compressedContent,
+      compressed: true,
       totalEntries,
       totalPages,
       currentPage: page

@@ -26,14 +26,9 @@
     "ws": "^8.18.1"
   },
   "scripts": {
-
-    "all:start": "npm run start & npm run server:start",
-    "start": "PORT=3333 FPORT=9999 react-scripts start",
-    "server:start": "FPORT=9999 node dist/server/server.js",
-
-    "all:build": "npm run build & npm run server:build",
-    "build": "react-scripts build",
-    "server:build": "tsc --project tsconfig.server.json"
+    "constart": "concurrently \"PORT=13333 serve -s build\" \"REACT_APP_FPORT=19999 node dist/server/server.js\"",
+    "conbuild": "concurrently \"REACT_APP_FPORT=19999 npm run build\" \"tsc --project tsconfig.server.json\"",
+    "build": "REACT_APP_FPORT=19999 react-scripts build"
   },
   "eslintConfig": {
     "extends": [

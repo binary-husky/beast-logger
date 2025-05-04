@@ -1,3 +1,9 @@
+from loguru import logger
+logger.remove()
+
+import jieba
+jieba.initialize()
+
 from rich import _wrap
 import jieba
 def words(text: str):

@@ -125,21 +125,21 @@ app.get('/api/logs/content', (req, res) => {
   }
 });
 
-// Watch logs directory for changes
-const logsDir = path.join(__dirname, '../../logs');
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
-}
+// // Watch logs directory for changes
+// const logsDir = path.join(__dirname, '../../logs');
+// if (!fs.existsSync(logsDir)) {
+//   fs.mkdirSync(logsDir, { recursive: true });
+// }
 
-fs.watch(logsDir, (eventType, filename) => {
-  if (filename) {
-    if (eventType === 'change') {
-      broadcast({ type: 'FILE_CHANGED', path: path.join(logsDir, filename) });
-    } else {
-      broadcast({ type: 'FILES_CHANGED' });
-    }
-  }
-});
+// fs.watch(logsDir, (eventType, filename) => {
+//   if (filename) {
+//     if (eventType === 'change') {
+//       broadcast({ type: 'FILE_CHANGED', path: path.join(logsDir, filename) });
+//     } else {
+//       broadcast({ type: 'FILES_CHANGED' });
+//     }
+//   }
+// });
 
 const FPORT = process.env.REACT_APP_FPORT || 9999;
 

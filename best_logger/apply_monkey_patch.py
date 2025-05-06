@@ -1,8 +1,9 @@
 from loguru import logger
 logger.remove()
 
-import jieba
+import jieba, sys
 jieba.initialize()
+logger.add(sys.stderr, colorize=True, enqueue=True)
 
 from rich import _wrap
 import jieba

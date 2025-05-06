@@ -61,6 +61,11 @@ def print_dict(d, header="", mod="", narrow=False) -> None:
     _log_final_exe(mod, result, header=header, color="#4422cc")
     return result
 
+def print_listofdict(arr, header="", mod="", narrow=False) -> None:
+    return print_dictofdict(
+        {f"[{str(index)}]": dat for index, dat in enumerate(arr)}, header, mod, narrow
+    )
+
 def print_dictofdict(dod, header="", mod="", narrow=False) -> None:
     row_keys = dod.keys()
     col_keys = set()

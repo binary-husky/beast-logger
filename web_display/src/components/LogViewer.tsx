@@ -12,7 +12,7 @@ interface LogViewerProps {
   currentPage?: number;
 }
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 15;
 
 const LogViewer: React.FC<LogViewerProps> = ({ 
   entries, 

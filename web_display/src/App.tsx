@@ -18,7 +18,7 @@ function App() {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const PAGE_SIZE = 5;
+  const PAGE_SIZE = 15;
 
   // Function to decompress gzipped base64 content
   const decompressContent = (compressedContent: string): string => {
@@ -43,7 +43,7 @@ function App() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:${FPORT}/api/logs/content?` + 
+        `/api/logs/content?` + 
         `path=${encodeURIComponent(file.path)}&` +
         `page=${page}&` +
         `num_entity_each_page=${PAGE_SIZE}`
@@ -66,8 +66,8 @@ function App() {
   const fetchLogFiles = useCallback(async (path?: string) => {
     try {
       const url = path 
-        ? `http://localhost:${FPORT}/api/logs/files?path=${encodeURIComponent(path)}`
-        : `http://localhost:${FPORT}/api/logs/files`;
+        ? `/api/logs/files?path=${encodeURIComponent(path)}`
+        : `/api/logs/files`;
       const response = await fetch(url);
       const data = await response.json();
       setFiles(data);
@@ -85,7 +85,7 @@ function App() {
     fetchLogFiles(path || undefined);
 
     // Set up WebSocket connection for real-time updates
-    const ws = new WebSocket(`ws://localhost:${FPORT}/ws`);
+    const ws = new WebSocket(`ws://${window.location.host}/ws`);
     
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);

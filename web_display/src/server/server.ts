@@ -6,13 +6,27 @@ import path from 'path';
 import fs from 'fs';
 import zlib from 'zlib';
 
+// Create Express app and HTTP server
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+
+// Initialize WebSocket server with noServer option
+const wss = new WebSocketServer({ noServer: true });
+
+// Handle WebSocket upgrade request
+server.on('upgrade', (request, socket, head) => {
+  if (request.url === '/ws') {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit('connection', ws, request);
+    });
+  }
+});
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// API Routes first for proper route matching
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
@@ -142,6 +156,14 @@ app.get('/api/logs/content', (req, res) => {
 // });
 
 const FPORT = process.env.REACT_APP_FPORT || 9999;
+
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, '../../build')));
+
+// Simple catch-all route for client-side routing
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, '../../build/index.html'));
+});
 
 server.listen(FPORT, () => {
   console.log(`Server running on port http://127.0.0.1:${FPORT}`);

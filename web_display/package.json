@@ -28,10 +28,13 @@
     "ws": "^8.18.1"
   },
   "scripts": {
-    "constart": "concurrently \"PORT=13333 serve -s build\" \"REACT_APP_FPORT=19999 node dist/server/server.js\"",
-    "conbuild": "concurrently \"REACT_APP_FPORT=19999 npm run build\" \"tsc --project tsconfig.server.json\"",
-    "build": "REACT_APP_FPORT=19999 react-scripts build"
+    "start": "REACT_APP_FPORT=8181 node dist/server/server.js",
+    "build": "REACT_APP_FPORT=8181 react-scripts build",
+    "compile": "tsc --project tsconfig.server.json",
+    "build:all": "npm run build && npm run compile",
+    "start:dev": "REACT_APP_FPORT=8181 react-scripts start"
   },
+  "proxy": "http://localhost:8181",
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -53,7 +53,7 @@ def print_dict(d, header="", mod="", narrow=False) -> None:
     table = Table(show_header=False, show_lines=True, header_style="bold white", expand=True)
     for key, value in d.items():
         table.add_row(
-            Text(key, style="bright_yellow", justify='full'),
+            Text(str(key), style="bright_yellow", justify='full'),
             Text(str(value), style="bright_green", justify='full'),
         )
     panel = Panel(table, expand=True, title=header, border_style="bold white")

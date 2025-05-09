@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Layout } from 'antd';
+import { Layout, Modal, Input, Button } from 'antd';
 import LogFileList from './components/LogFileList';
 import LogViewer from './components/LogViewer';
 import { LogFile, LogEntry } from './types';
@@ -17,6 +17,8 @@ function App() {
   const [totalEntries, setTotalEntries] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showPathInput, setShowPathInput] = useState(false);
+  const [pathInput, setPathInput] = useState('');
 
   const PAGE_SIZE = 15;
 
@@ -77,12 +79,35 @@ function App() {
     }
   }, []);
 
+  // Handle path input submission
+  const handlePathSubmit = () => {
+    if (pathInput.trim()) {
+      // Update URL with the new path parameter
+      const url = new URL(window.location.href);
+      url.searchParams.set('path', pathInput.trim());
+      window.history.pushState({}, '', url.toString());
+      
+      // Fetch log files with the new path
+      fetchLogFiles(pathInput.trim());
+      
+      // Close the modal
+      setShowPathInput(false);
+    }
+  };
+
   // Initial load of log files
   useEffect(() => {
     // Get path from URL query parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const path = urlParams.get('path');
-    fetchLogFiles(path || undefined);
+    
+    if (!path) {
+      // If path is missing, show the input popup
+      setShowPathInput(true);
+    } else {
+      // If path exists, fetch log files
+      fetchLogFiles(path);
+    }
 
     // Set up WebSocket connection for real-time updates
     const ws = new WebSocket(`ws://${window.location.host}/ws`);
@@ -102,7 +127,7 @@ function App() {
     return () => {
       ws.close();
     };
-  }, [selectedFile, fetchLogFiles, readLogFile]); // Include all dependencies
+  }, [fetchLogFiles, readLogFile]); // Include all dependencies
 
   // Handle file selection
   const handleFileSelect = (file: LogFile) => {
@@ -112,42 +137,68 @@ function App() {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider width={200} theme="light">
-        <LogFileList
-          files={files}
-          onFileSelect={handleFileSelect}
-          selectedFile={selectedFile}
-        />
-      </Sider>
-      <Content>
-        {selectedFile ? (
-          <LogViewer 
-            entries={logEntries} 
-            isLoading={isLoading}
-            onPageChange={(page) => {
-              setCurrentPage(page);
-              if (selectedFile) {
-                readLogFile(selectedFile, page);
-              }
-            }}
-            totalEntries={totalEntries}
-            currentPage={currentPage}
+    <>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Sider width={200} theme="light">
+          <LogFileList
+            files={files}
+            onFileSelect={handleFileSelect}
+            selectedFile={selectedFile}
           />
-        ) : (
-          <div style={{
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '16px',
-            color: '#999',
-          }}>
-            Select a log file to view its contents
-          </div>
-        )}
-      </Content>
-    </Layout>
+        </Sider>
+        <Content>
+          {selectedFile ? (
+            <LogViewer 
+              entries={logEntries} 
+              isLoading={isLoading}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                if (selectedFile) {
+                  readLogFile(selectedFile, page);
+                }
+              }}
+              totalEntries={totalEntries}
+              currentPage={currentPage}
+            />
+          ) : (
+            <div style={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '16px',
+              color: '#999',
+            }}>
+              Select a log file to view its contents
+            </div>
+          )}
+        </Content>
+      </Layout>
+
+      {/* Path Input Modal */}
+      <Modal
+        title="Enter Log Directory Path"
+        open={showPathInput}
+        onCancel={() => setShowPathInput(false)}
+        footer={[
+          <Button key="submit" type="primary" onClick={handlePathSubmit}>
+            Submit
+          </Button>,
+        ]}
+        closable={false}
+        maskClosable={false}
+        keyboard={false}
+      >
+        <p>Please enter the path to your log directory:</p>
+        <Input 
+          value={pathInput}
+          onChange={(e) => setPathInput(e.target.value)}
+          placeholder="Enter path"
+          onPressEnter={handlePathSubmit}
+          autoFocus
+        />
+      </Modal>
+    </>
   );
 }
 

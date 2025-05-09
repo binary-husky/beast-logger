@@ -1,19 +1,29 @@
-#
 
-
-# web launcher
-
-
+# 进入网页渲染子模块
 cd web_display
+# 安装nvm
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+# 重启终端
 重启终端
+# 安装 16
 nvm install 16
+# 使用 16
 nvm use 16
+# 安装组件
 npm install -g concurrently serve
 npm install
-npm run conbuild && npm run constart
 
-http://localhost:13333/?path=/venv/third_party/best_logger/web_display/logs
+# 测试程序
 
-http://localhost:13333/?path=/mnt/data_cpfs/fuqingxu/code_dev/auto_rfft_dev/logs
-http://localhost:19999/api/logs/files?path=/mnt/data_cpfs/fuqingxu/code_dev/auto_rfft_dev/logs
+from best_logger import *
+register_logger(mods=["abc"])
+print_dict({
+    "a": 1,
+    "b": 2,
+    "c": 3,
+}, mod="abc")
+
+
+# 运行网页渲染
+
+bash start_web.sh 或者 npm run build:all && npm start

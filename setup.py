@@ -40,6 +40,7 @@ setup(
     entry_points={
         "console_scripts": [
             "simple_eval=best_logger.simple_eval:main",
+            "best-logger-web=best_logger.web_launcher:main",
         ],
     },
     project_urls={

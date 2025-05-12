@@ -28,6 +28,8 @@ export function sortLogEntries(entries: LogEntry[], ascending: boolean = true): 
 function parseLogLine(line: string): Partial<LogEntry> | null {
   const logLevelPattern = /\|\s*(INFO|DEBUG|WARN|ERROR|CRITICAL)\s*\|/;
   if (!logLevelPattern.test(line)) return null;
+  // if line starts with `{`, also return null
+  if (line.trim().startsWith('{')) return null;
 
   const [timestamp, level, module, lineNum, ...messageParts] = line.split('|').map(part => part.trim());
   

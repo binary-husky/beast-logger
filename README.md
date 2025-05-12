@@ -26,4 +26,20 @@ print_dict({
 
 # 运行网页渲染
 
-bash start_web.sh 或者 npm run build:all && npm start
+可以使用以下任一方式运行网页渲染：
+
+1. 使用 Python CLI 命令（安装后可用）：
+```bash
+best-logger-web
+```
+
+2. 直接运行 bash 脚本：
+```bash
+bash start_web.sh
+```
+
+3. 手动运行 npm 命令：
+```bash
+cd web_display
+npm run build:all && npm start
+```

@@ -18,11 +18,11 @@ def main():
 
         # Make sure the script is executable
         os.chmod(start_web_script, 0o755)
-        
+
         # Print starting message
         print(f"Starting best-logger web interface using {start_web_script}")
         print("The web server will continue running in the background.")
-        
+
         # Execute the shell script without blocking
         process = subprocess.Popen(
             [start_web_script],
@@ -33,7 +33,7 @@ def main():
             text=True,
             bufsize=1,  # Line buffered
         )
-        
+
         # Print the first few lines of output to show progress
         print("Server output:")
         for i, line in enumerate(process.stdout):
@@ -42,10 +42,10 @@ def main():
             # if i >= 10 or "Server started" in line or "Compiled successfully" in line:
             #     print("\nServer is now running in the background.")
             #     break
-                
+
         # Don't wait for the process to complete
         return
-            
+
     except Exception as e:
         print(f"Error launching best-logger web interface: {str(e)}", file=sys.stderr)
         sys.exit(1)

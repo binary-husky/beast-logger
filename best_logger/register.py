@@ -26,7 +26,7 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
 
     logger.remove()
     # logger.add(sys.stderr, format=formatter_with_clip, colorize=True, enqueue=True, filter=is_not_non_console_mod)
-    logger.add(sys.stderr, colorize=True, enqueue=True, filter=is_not_non_console_mod)
+    logger.add(sys.stderr, colorize=True, enqueue=False, filter=is_not_non_console_mod)
     regular_log_path = os.path.join(base_log_path, "regular", "regular.log")
     logger.add(regular_log_path, rotation="50 MB", enqueue=True, filter=is_not_non_console_mod)
     for mod in (mods + non_console_mods):

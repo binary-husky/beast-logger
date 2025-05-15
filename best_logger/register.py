@@ -8,6 +8,11 @@ import shutil
 # )
 
 def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_clean_mods=[]):
+    """ mods: 需要注册的模块名列表，同时向终端和文件输出
+        non_console_mods: 需要注册的模块名列表，只向文件输出
+        base_log_path: 日志文件存放的根目录
+        auto_clean_mods: 需要自动删除旧日志的模块名列表
+    """
     import os
     import sys
 

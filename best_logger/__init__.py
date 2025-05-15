@@ -85,3 +85,24 @@ def print_dictofdict(dod, header="", mod="", narrow=False) -> None:
     result = rich2text(panel, narrow)
     _log_final_exe(mod, result, header=header)
     return result
+
+def sprintf_nested_structure(nested_structure, current_depth=0):
+    from textwrap import indent
+    buffer = ""
+    if isinstance(nested_structure, dict):
+        for key, value in nested_structure.items():
+            buffer += f"[field '{str(key)}']"
+            buffer += "\n"
+            buffer += indent(sprintf_nested_structure(value, current_depth + 1), "  ")
+            buffer += "\n"
+    elif isinstance(nested_structure, list):
+        if len(nested_structure) == 1:
+            buffer += sprintf_nested_structure(nested_structure[0], current_depth)
+            buffer += "\n"
+        else:
+            for index, item in enumerate(nested_structure):
+                buffer += f"[{index+1}]."
+                buffer += sprintf_nested_structure(item, current_depth)
+    else:
+        buffer += str(nested_structure)
+    return buffer.strip('\n')

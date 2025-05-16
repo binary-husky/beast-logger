@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from functools import partial
-from best_logger.register import register_logger
+from best_logger.register import register_logger, registered_mods
 from best_logger.log_json import append_to_jsonl
 
 def formatter_with_clip(record):
@@ -40,14 +40,16 @@ def _log_final_exe(mod=None, buf="", color=None, header=None):
         assert mod is not None
     if mod:
         logger.bind(**{mod: True}).opt(depth=2).info(buf)
-        logger.bind(**{mod+"_json": True}).opt(depth=2).info("\n" + json.dumps({
-            "header": header,
-            "color": color,
-            "content": buf,
-        }, ensure_ascii=False))
+        if mod+"_json" in registered_mods:
+            logger.bind(**{mod+"_json": True}).opt(depth=2).info("\n" + json.dumps({
+                "header": header,
+                "color": color,
+                "content": buf,
+            }, ensure_ascii=False))
     else:
         logger.opt(depth=2).info(buf)
     return buf
+
 
 def print_dict(d, header="", mod="", narrow=False) -> None:
     table = Table(show_header=False, show_lines=True, header_style="bold white", expand=True)
@@ -68,10 +70,14 @@ def print_listofdict(arr, header="", mod="", narrow=False) -> None:
 
 def print_dictofdict(dod, header="", mod="", narrow=False) -> None:
     row_keys = dod.keys()
-    col_keys = set()
+    col_keys = {}
     for row in row_keys:
-        col_keys.update(dod[row].keys())
-    col_keys = sorted(col_keys)
+        for index, k in enumerate(dod[row].keys()):
+            if k not in col_keys: col_keys[k] = 0
+            col_keys[k] += index
+    # sort col_keys according to size of col_keys[k]
+    col_keys = sorted(col_keys, key=lambda k: col_keys[k])
+
     headers =  [''] + col_keys
     table = Table(*[rich.table.Column(k) for k in headers], show_header=True, show_lines=True, header_style="bold white", expand=True)
 

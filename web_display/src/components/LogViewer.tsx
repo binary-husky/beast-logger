@@ -172,7 +172,7 @@ const LogViewer: React.FC<LogViewerProps> = ({
               padding: '5px',
               borderRadius: '4px',
               border: '1px solid #f0f0f0',
-              fontFamily: '"DejaVu Sans Mono", Consolas, monospace',
+              fontFamily: 'ChineseFont, "DejaVu Sans Mono", Consolas, monospace',
               textTransform: 'none',
               fontVariantEastAsian: 'none',
               fontKerning: 'none',

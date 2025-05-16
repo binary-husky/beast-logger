@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from functools import partial
-from best_logger.register import register_logger, registered_mods
+from best_logger.register import register_logger, LoggerConfig
 from best_logger.log_json import append_to_jsonl
 
 def formatter_with_clip(record):
@@ -40,7 +40,7 @@ def _log_final_exe(mod=None, buf="", color=None, header=None):
         assert mod is not None
     if mod:
         logger.bind(**{mod: True}).opt(depth=2).info(buf)
-        if mod+"_json" in registered_mods:
+        if mod+"_json" in LoggerConfig.registered_mods:
             logger.bind(**{mod+"_json": True}).opt(depth=2).info("\n" + json.dumps({
                 "header": header,
                 "color": color,

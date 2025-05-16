@@ -1,20 +1,28 @@
 from loguru import logger
 from functools import partial
 import shutil
-global registered_mods, register_kwargs
-registered_mods = []
 
-# custom_format = (
-#     "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | "
-#     "\"{name}/{function}\", line {line} - {message}"
-# )
+
+def singleton(cls):
+    _instance = {}
+    def _singleton(*args, **kwargs):
+        if cls not in _instance:
+            _instance[cls] = cls(*args, **kwargs)
+        return _instance[cls]
+    return _singleton
+
+
+class LoggerConfig(object):
+    registered_mods = []
+    register_kwargs = {}
+
 
 def change_base_log_path(base_log_path):
-    global registered_mods, register_kwargs
-    register_kwargs['base_log_path'] = base_log_path
-    register_kwargs['auto_clean_mods'] = []
-    register_logger(**register_kwargs)
+    LoggerConfig.register_kwargs['auto_clean_mods'] = []
+    LoggerConfig.register_kwargs['base_log_path'] = base_log_path
+    register_logger(**LoggerConfig.register_kwargs)
     return
+
 
 def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_clean_mods=[]):
     """ mods: 需要注册的模块名列表，同时向终端和文件输出
@@ -24,13 +32,12 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
     """
     import os
     import sys
-    global registered_mods, register_kwargs
-    registered_mods = []
-    register_kwargs = {
-        mods: mods,
-        non_console_mods: non_console_mods,
-        base_log_path: base_log_path,
-        auto_clean_mods: auto_clean_mods,
+    LoggerConfig.register_kwargs['auto_clean_mods'] = []
+    LoggerConfig.register_kwargs = {
+        "mods": mods,
+        "non_console_mods": non_console_mods,
+        "base_log_path": base_log_path,
+        "auto_clean_mods": auto_clean_mods,
     }
     def is_not_non_console_mod(record):
         extra_keys = list(record["extra"].keys())
@@ -65,6 +72,6 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
         # 添加一个json日志
         json_log_path = os.path.join(base_log_path, mod, f"{mod}.json.log")
         logger.add(json_log_path, rotation="50 MB", enqueue=True, filter=partial(debug, mod=mod+"_json"))
-        registered_mods += [mod]
-        registered_mods += [mod+"_json"]
+        LoggerConfig.registered_mods += [mod]
+        LoggerConfig.registered_mods += [mod+"_json"]
     return

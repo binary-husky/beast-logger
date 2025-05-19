@@ -29,7 +29,32 @@ const LogViewer: React.FC<LogViewerProps> = ({
   // Function to copy attach content to clipboard
   const copyAttachToClipboard = () => {
     if (selectedEntry?.attach) {
-      navigator.clipboard.writeText(selectedEntry.attach);
+      // Create a temporary textarea element
+      const textarea = document.createElement('textarea');
+      textarea.value = selectedEntry.attach;
+      
+      // Make it invisible but still part of the document
+      textarea.style.position = 'absolute';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '0';
+      
+      // Add to document, select text, and execute copy command
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          message.success('Copied to clipboard');
+        } else {
+          message.error('Failed to copy to clipboard');
+        }
+      } catch (err) {
+        message.error('Failed to copy to clipboard');
+      } finally {
+        // Clean up
+        document.body.removeChild(textarea);
+      }
     }
   };
 

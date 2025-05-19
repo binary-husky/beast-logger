@@ -30,12 +30,12 @@ def rich2text(rich_elem, narrow=False):
     del output
     return "\n" + text
 
-def print_list(arr, header="", mod="", narrow=False) -> None:
+def print_list(arr, header="", mod="", narrow=False, attach=None) -> None:
     d = {str(index): str(value) for index, value in enumerate(arr)}
     result = print_dict(d, header=header, mod=mod, narrow=narrow)
     return result
 
-def _log_final_exe(mod=None, buf="", color=None, header=None):
+def _log_final_exe(mod=None, buf="", color=None, header=None, attach=None):
     if header is not None or color is not None:
         assert mod is not None
     if mod:
@@ -45,13 +45,14 @@ def _log_final_exe(mod=None, buf="", color=None, header=None):
                 "header": header,
                 "color": color,
                 "content": buf,
+                "attach": attach,
             }, ensure_ascii=False))
     else:
         logger.opt(depth=2).info(buf)
     return buf
 
 
-def print_dict(d, header="", mod="", narrow=False) -> None:
+def print_dict(d, header="", mod="", narrow=False, attach=None) -> None:
     table = Table(show_header=False, show_lines=True, header_style="bold white", expand=True)
     for key, value in d.items():
         table.add_row(
@@ -60,15 +61,15 @@ def print_dict(d, header="", mod="", narrow=False) -> None:
         )
     panel = Panel(table, expand=True, title=header, border_style="bold white")
     result = rich2text(panel, narrow)
-    _log_final_exe(mod, result, header=header, color="#4422cc")
+    _log_final_exe(mod, result, header=header, color="#4422cc", attach=attach)
     return result
 
-def print_listofdict(arr, header="", mod="", narrow=False) -> None:
+def print_listofdict(arr, header="", mod="", narrow=False, attach=None) -> None:
     return print_dictofdict(
         {f"[{str(index)}]": dat for index, dat in enumerate(arr)}, header, mod, narrow
     )
 
-def print_dictofdict(dod, header="", mod="", narrow=False) -> None:
+def print_dictofdict(dod, header="", mod="", narrow=False, attach=None) -> None:
     row_keys = dod.keys()
     col_keys = {}
     for row in row_keys:
@@ -89,7 +90,7 @@ def print_dictofdict(dod, header="", mod="", narrow=False) -> None:
         table.add_row(*cols)
     panel = Panel(table, expand=True, title=header, border_style="bold white")
     result = rich2text(panel, narrow)
-    _log_final_exe(mod, result, header=header)
+    _log_final_exe(mod, result, header=header, attach=attach)
     return result
 
 def sprintf_nested_structure(nested_structure, current_depth=0):

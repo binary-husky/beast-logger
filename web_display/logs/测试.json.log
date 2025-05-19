@@ -1,10 +1,10 @@
 2025-05-02 22:07:43.023 | INFO     | __main__:<module>:199 - 
-{"header": "这个是Header 1", "color": "#FF88cc", "content": "这是主内容"}
+{"header": "这个是Header 1", "color": "#FF88cc", "content": "这是主内容", "attach": "这是附加内容1"}
 2025-05-02 22:17:43.023 | INFO     | __main__:<module>:199 - 
 {"header": "这个是Header 2", "color": "#3333cc", "content": "这是主内容"}
 2025-05-02 22:27:43.023 | INFO     | __main__:<module>:199 - 
-{"header": "这个是Header 3", "color": "#3333cc", "content": "这是主内容"}
+{"header": "这个是Header 3", "color": "#3333cc", "content": "这是主内容", "attach": "这是附加内容2"}
 2025-05-02 22:37:43.023 | INFO     | __main__:<module>:199 - 
 {"header": "这个是Header 4", "color": "#3333cc", "content": "这是主内容"}
 2025-05-02 22:47:43.023 | INFO     | __main__:<module>:199 - 
-{"header": "这个是Header 5", "color": "#3333cc", "content": "这是主内容"}
+{"header": "这个是Header 5", "color": "#3333cc", "content": "这是主内容", "attach": "这是附加内容3"}

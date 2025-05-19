@@ -10,6 +10,13 @@
   src: url('./Ubuntu Mono derivative Powerline.ttf') format('truetype');
   /* unicode-range: U+4E00-9FFF; */
 }
+
+@font-face {
+  font-family: 'ChineseFontBold';
+  src: url('./Ubuntu Mono derivative Powerline Bold.ttf') format('truetype');
+  /* unicode-range: U+4E00-9FFF; */
+}
+
 /* 
 @font-face {
   font-family: 'EnglishFont';

@@ -4,6 +4,7 @@ type LogMetadata = {
   color: string | null;
   header: string | null;
   true_content: string | null;
+  attach?: string | null;
 };
 
 /**
@@ -52,7 +53,7 @@ function parseLogLine(line: string): Partial<LogEntry> | null {
  * @returns Parsed metadata or null values if parsing fails
  */
 function parseJsonMetadata(content: string): LogMetadata {
-  const defaultMetadata: LogMetadata = { color: null, header: null, true_content: null };
+  const defaultMetadata: LogMetadata = { color: null, header: null, true_content: null, attach: null };
   
   try {
     const contentLines = content.split('\n');
@@ -63,7 +64,8 @@ function parseJsonMetadata(content: string): LogMetadata {
     return {
       color: jsonData?.color ?? null,
       header: jsonData?.header ?? null,
-      true_content: jsonData?.content ?? null
+      true_content: jsonData?.content ?? null,
+      attach: jsonData?.attach ?? null
     };
   } catch {
     return defaultMetadata;

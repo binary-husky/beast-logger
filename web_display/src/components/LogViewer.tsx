@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { List, Button, Pagination, Spin } from 'antd';
-import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
+import { List, Button, Pagination, Spin, message } from 'antd';
+import { SortAscendingOutlined, SortDescendingOutlined, CopyOutlined } from '@ant-design/icons';
 import { LogEntry } from '../types';
 import { sortLogEntries } from '../utils/logParser';
 
@@ -25,6 +25,13 @@ const LogViewer: React.FC<LogViewerProps> = ({
   const [selectedEntry, setSelectedEntry] = useState<LogEntry | null>(null);
   const [fontSize, setFontSize] = useState(14);
   const logContentRef = useRef<HTMLPreElement>(null);
+  
+  // Function to copy attach content to clipboard
+  const copyAttachToClipboard = () => {
+    if (selectedEntry?.attach) {
+      navigator.clipboard.writeText(selectedEntry.attach);
+    }
+  };
 
   useEffect(() => {
     if (selectedEntry && logContentRef.current) {
@@ -160,7 +167,22 @@ const LogViewer: React.FC<LogViewerProps> = ({
               <div style={{ color: selectedEntry.color || getLevelColor(selectedEntry.level), fontWeight: 'bold' }}>
                 [{selectedEntry.level}] {selectedEntry.header || selectedEntry.message}
               </div>
-              <div style={{ color: '#666', marginTop: '4px' }}>{selectedEntry.timestamp}</div>
+              <div style={{ color: '#666', marginTop: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{selectedEntry.timestamp}</span>
+                {selectedEntry.attach && (
+                  <Button 
+                    type="primary" 
+                    size="small" 
+                    icon={<CopyOutlined />} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyAttachToClipboard();
+                    }}
+                  >
+                    Copy Attach
+                  </Button>
+                )}
+              </div>
             </div>
             <pre 
               ref={logContentRef}
@@ -172,7 +194,7 @@ const LogViewer: React.FC<LogViewerProps> = ({
               padding: '5px',
               borderRadius: '4px',
               border: '1px solid #f0f0f0',
-              fontFamily: 'ChineseFont, "DejaVu Sans Mono", Consolas, monospace',
+              fontFamily: 'ChineseFont, ChineseFontBold, "DejaVu Sans Mono", Consolas, monospace',
               textTransform: 'none',
               fontVariantEastAsian: 'none',
               fontKerning: 'none',

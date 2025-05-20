@@ -111,15 +111,20 @@ print_dict({
     ```
 
 - install nvm
-`wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash`
+
+    `wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash`
 
 - launch web display (first time)
-python -m web_display.install
+
+    `python -m web_display.install`
 
 - launch web display (no more npm install)
-python -m web_display.go
 
-- open `http://localhost:8181`
+    `python -m web_display.go`
+
+- open in browser
+
+    `http://localhost:8181`
 
 ![Image](https://github.com/user-attachments/assets/5fa151d9-26e2-48ef-9565-ced714eb1617)
 
@@ -142,5 +147,4 @@ twine upload dist/*
 rm -rf build
 rm -rf dist
 python setup.py sdist bdist_wheel
-
-uv pip install /mnt/data_cpfs/fuqingxu/code_dev/BeyondAgent/third_party/best-logger/dist/best_logger-0.0.1.tar.gz -->
+-->

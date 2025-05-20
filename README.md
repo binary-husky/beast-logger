@@ -84,6 +84,8 @@ print_dict({
 
 # Quick Start
 
+- install: `pip install beast-logger -i https://pypi.org/simple`
+
 - import
     ```python
     from best_logger import *

@@ -1,11 +1,95 @@
+# Core features
+
+Log data as tables, and then render them as entries in web log viewer with extremely simple functions !
+
+```python
+from best_logger import *
+
+# === log nested dictionaries as table ===
+print_dictofdict({
+    'sample-1':{
+        "a": 1,
+        "b": 2,
+        "c": 3,
+    },
+    'sample-2':{
+        "a": 4,
+        "b": 5,
+        "c": 6,
+    }
+}, narrow=True, header="this is a header", mod="", attach="create a copy button in web log viewer, when clicked, copy this message into clipboard")
+
+# ╭─────────────── this is a header ───────────────╮
+# │ ┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━━━┓ │
+# │ ┃                      ┃ a     ┃ b    ┃ c    ┃ │
+# │ ┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━╇━━━━━━┩ │
+# │ │ sample-1             │ 1     │ 2    │ 3    │ │
+# │ ├──────────────────────┼───────┼──────┼──────┤ │
+# │ │ sample-2             │ 4     │ 5    │ 6    │ │
+# │ └──────────────────────┴───────┴──────┴──────┘ │
+# ╰────────────────────────────────────────────────╯
+```
+
+![Image](https://github.com/user-attachments/assets/92d1a14b-3c64-4c61-8be8-9ea4bbff2422)
+
+
+
+```python
+
+# === log a list of dictionaries as table ===
+print_listofdict(
+    [{
+        "a": 1,
+        "b": 2,
+        "c": 3,
+    },
+    {
+        "a": 4,
+        "b": 5,
+        "c": 6,
+    }], narrow=True)
+
+# ╭────────────────────────────────────────────────╮
+# │ ┏━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓ │
+# │ ┃           ┃ a        ┃ b        ┃ c        ┃ │
+# │ ┡━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩ │
+# │ │ 0         │ 1        │ 2        │ 3        │ │
+# │ ├───────────┼──────────┼──────────┼──────────┤ │
+# │ │ 1         │ 4        │ 5        │ 6        │ │
+# │ └───────────┴──────────┴──────────┴──────────┘ │
+# ╰────────────────────────────────────────────────╯
+```
+
+
+```python
+
+# === log dictionary as table ===
+print_dict({
+    "a": 1,
+    "b": 2,
+    "c": 3,
+}, mod="abc")
+
+# ╭────────────────────────────────────────────────╮
+# │ ┌──────────────────────┬─────────────────────┐ │
+# │ │ a                    │ 1                   │ │
+# │ ├──────────────────────┼─────────────────────┤ │
+# │ │ b                    │ 2                   │ │
+# │ ├──────────────────────┼─────────────────────┤ │
+# │ │ c                    │ 3                   │ │
+# │ └──────────────────────┴─────────────────────┘ │
+# ╰────────────────────────────────────────────────╯
+
+```
+
 # Quick Start
 
 - import
-    ```
+    ```python
     from best_logger import *
     ```
 - register file handler
-    ```
+    ```python
     def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_clean_mods=[]):
         """ mods: 需要注册的模块名列表，同时向终端和文件输出
             non_console_mods: 需要注册的模块名列表，只向文件输出
@@ -14,32 +98,6 @@
     """
     ```
 - begin logging
-    ```
-    from best_logger import *
-    register_logger(mods=["abc"])
-    print_dict({
-        "a": 1,
-        "b": 2,
-        "c": 3,
-    }, mod="abc")
-    ```
-
-# 启动web display
-- 进入网页渲染子模块
-cd web_display
-- 安装nvm
-`wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash`
-- 重启终端
-重启终端
-- 安装 16
-nvm install 16
-- 使用 16
-nvm use 16
-- 安装组件
-npm install -g concurrently serve
-npm install
-
-- 测试程序
     ```python
     from best_logger import *
     register_logger(mods=["abc"])
@@ -50,9 +108,37 @@ npm install
     }, mod="abc")
     ```
 
-- 运行网页渲染
+- install nvm
+`wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash`
 
-    ```bash
-    bash start_web.sh
+- launch web display (first time)
+python -m web_display.install
+
+- launch web display (no more npm install)
+python -m web_display.go
+
+- open `http://localhost:8181`
+
+![Image](https://github.com/user-attachments/assets/5fa151d9-26e2-48ef-9565-ced714eb1617)
+
+- test program and enter log dir (absolute path) into web log viewer.
+    ```python
+    from best_logger import *
+    register_logger(mods=["abc"])
+    print_dict({
+        "a": 1,
+        "b": 2,
+        "c": 3,
+    }, mod="abc")
     ```
 
+
+<!-- 
+# Upload to PyPI
+twine upload dist/*
+
+rm -rf build
+rm -rf dist
+python setup.py sdist bdist_wheel
+
+uv pip install /mnt/data_cpfs/fuqingxu/code_dev/BeyondAgent/third_party/best-logger/dist/best_logger-0.0.1.tar.gz -->

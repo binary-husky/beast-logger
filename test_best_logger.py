@@ -1,13 +1,18 @@
 from best_logger import *
 
 register_logger(mods=["abc"])
-
-print_dict({
-    "a": 1,
-    "b": 2,
-    "c": 3,
-}, mod="abc")
-
+print_dictofdict({
+    'sample-1':{
+        "a": 1,
+        "b": 2,
+        "c": 3,
+    },
+    'sample-2':{
+        "a": 4,
+        "b": 5,
+        "c": 6,
+    }
+}, narrow=True, header="this is a header", mod="abc", attach="create a copy button in web log viewer, when clicked, copy this message into clipboard")
 
 # 输出
 # ╭────────────────────────────────────────────────╮

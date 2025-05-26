@@ -97,7 +97,7 @@ function App() {
 
   // Initial load of log files
   useEffect(() => {
-    // Get path from URL query parameter if present
+    // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const path = urlParams.get('path');
     
@@ -109,31 +109,51 @@ function App() {
       fetchLogFiles(path);
     }
 
-    // Set up WebSocket connection for real-time updates
-    const ws = new WebSocket(`ws://${window.location.host}/ws`);
+    // // Set up WebSocket connection for real-time updates
+    // const ws = new WebSocket(`ws://${window.location.host}/ws`);
     
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+    // ws.onmessage = (event) => {
+    //   const data = JSON.parse(event.data);
       
-      if (data.type === 'FILE_CHANGED' && data.path === selectedFile?.path && selectedFile) {
-        readLogFile(selectedFile);
-      } else if (data.type === 'FILES_CHANGED') {
-        const urlParams = new URLSearchParams(window.location.search);
-        const path = urlParams.get('path');
-        fetchLogFiles(path || undefined);
-      }
-    };
+    //   if (data.type === 'FILE_CHANGED' && data.path === selectedFile?.path && selectedFile) {
+    //     readLogFile(selectedFile);
+    //   } else if (data.type === 'FILES_CHANGED') {
+    //     const urlParams = new URLSearchParams(window.location.search);
+    //     const path = urlParams.get('path');
+    //     fetchLogFiles(path || undefined);
+    //   }
+    // };
 
-    return () => {
-      ws.close();
-    };
+    // return () => {
+    //   ws.close();
+    // };
   }, [fetchLogFiles, readLogFile]); // Include all dependencies
+
+  // Initial load of log files
+  useEffect(() => {
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedFilePath = urlParams.get('selectedFilePath');
+    if (files){
+      // Find the file in the fetched files
+      const fileToSelect = files.find(file => file.path === selectedFilePath);
+      if (fileToSelect) {
+        // If the file exists, select it and read its content
+        handleFileSelect(fileToSelect);
+      }
+    }
+  }, [files]); // Include all dependencies
 
   // Handle file selection
   const handleFileSelect = (file: LogFile) => {
     setSelectedFile(file);
     setCurrentPage(1); // Reset to first page when selecting a new file
     readLogFile(file, 1);
+
+    // Update URL with the selected file path
+    const url = new URL(window.location.href);
+    url.searchParams.set('selectedFilePath', file.path);
+    window.history.pushState({}, '', url.toString());
   };
 
   return (

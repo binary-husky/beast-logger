@@ -142,9 +142,9 @@ print_dict({
 
 <!-- 
 # Upload to PyPI
-twine upload dist/*
 
 rm -rf build
 rm -rf dist
 python setup.py sdist bdist_wheel
+twine upload dist/*
 -->

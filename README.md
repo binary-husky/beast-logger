@@ -114,13 +114,13 @@ print_dict({
 
     `wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash`
 
-- launch web display (first time)
+- launch web display on port 8181 (first time)
 
-    `python -m web_display.install`
+    `python -m web_display.install 8181`
 
-- launch web display (no more npm install)
+- launch web display on port 8181 (skip npm install)
 
-    `python -m web_display.go`
+    `python -m web_display.go 8181`
 
 - open in browser
 

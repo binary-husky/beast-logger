@@ -28,11 +28,11 @@
     "ws": "^8.18.1"
   },
   "scripts": {
-    "start": "REACT_APP_FPORT=8181 node dist/server/server.js",
-    "build": "REACT_APP_FPORT=8181 react-scripts build",
+    "start": "node dist/server/server.js",
+    "build": "react-scripts build",
     "compile": "tsc --project tsconfig.server.json",
     "build:all": "npm run build && npm run compile",
-    "start:dev": "REACT_APP_FPORT=8181 react-scripts start"
+    "start:dev": "react-scripts start"
   },
   "proxy": "http://localhost:8181",
   "eslintConfig": {

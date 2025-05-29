@@ -1,6 +1,7 @@
 from loguru import logger
 from functools import partial
 import shutil
+import time
 
 
 def singleton(cls):
@@ -32,6 +33,8 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
     """
     import os
     import sys
+
+    registered_before = True if LoggerConfig.registered_mods else False
     LoggerConfig.register_kwargs['auto_clean_mods'] = []
     LoggerConfig.register_kwargs = {
         "mods": mods,
@@ -55,6 +58,26 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
     logger.remove()
     # logger.add(sys.stderr, format=formatter_with_clip, colorize=True, enqueue=True, filter=is_not_non_console_mod)
     logger.add(sys.stderr, colorize=True, enqueue=False, filter=is_not_non_console_mod)
+
+    if not registered_before:
+        best_logger_web_service_url = os.environ.get("BEST_LOGGER_WEB_SERVICE_URL", None)
+        logger.warning(f"\n********************************\n"
+                    f"You can run following command to serve logs with web app:\n\tpython -m web_display.install"
+                    f"\n********************************\n"
+        )
+        if best_logger_web_service_url:
+            if not best_logger_web_service_url.startswith("http"):
+                raise ValueError("BEST_LOGGER_WEB_SERVICE_URL must start with http or https")
+            if not best_logger_web_service_url.endswith("/"):
+                best_logger_web_service_url += "/"
+            abs_path = os.path.abspath(base_log_path)
+            logger.warning(
+                f"\n********************************\n"
+                f"Log will be served at:\n\t{best_logger_web_service_url}?path={abs_path}"
+                f"\n********************************\n"
+            )
+            time.sleep(2)
+
     regular_log_path = os.path.join(base_log_path, "regular", "regular.log")
     logger.add(regular_log_path, rotation="50 MB", enqueue=True, filter=is_not_non_console_mod)
     for mod in (mods + non_console_mods):

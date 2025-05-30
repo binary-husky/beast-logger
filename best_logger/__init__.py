@@ -1,6 +1,6 @@
 # first do a monkey patch, this must be import first
 import best_logger.apply_monkey_patch
-import rich, json
+import rich, json, time
 from loguru import logger
 from io import StringIO
 from rich.console import Console
@@ -47,6 +47,9 @@ def _log_final_exe(mod=None, buf="", color=None, header=None, attach=None):
                 "content": buf,
                 "attach": attach,
             }, ensure_ascii=False))
+            if LoggerConfig.register_kwargs["debug"] == True:
+                if len(buf) > 10000: time.sleep(1)
+                else: time.sleep(0.1)
     else:
         logger.opt(depth=2).info(buf)
     return buf

@@ -25,7 +25,7 @@ def change_base_log_path(base_log_path):
     return
 
 
-def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_clean_mods=[]):
+def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_clean_mods=[], debug=False):
     """ mods: 需要注册的模块名列表，同时向终端和文件输出
         non_console_mods: 需要注册的模块名列表，只向文件输出
         base_log_path: 日志文件存放的根目录
@@ -41,6 +41,7 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
         "non_console_mods": non_console_mods,
         "base_log_path": base_log_path,
         "auto_clean_mods": auto_clean_mods,
+        "debug": debug,
     }
     def is_not_non_console_mod(record):
         extra_keys = list(record["extra"].keys())
@@ -59,24 +60,24 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
     # logger.add(sys.stderr, format=formatter_with_clip, colorize=True, enqueue=True, filter=is_not_non_console_mod)
     logger.add(sys.stderr, colorize=True, enqueue=False, filter=is_not_non_console_mod)
 
+    best_logger_web_service_url = os.environ.get("BEST_LOGGER_WEB_SERVICE_URL", None)
     if not registered_before:
-        best_logger_web_service_url = os.environ.get("BEST_LOGGER_WEB_SERVICE_URL", None)
         logger.warning(f"\n********************************\n"
                     f"You can run following command to serve logs with web app:\n\tpython -m web_display.install"
                     f"\n********************************\n"
         )
-        if best_logger_web_service_url:
-            if not best_logger_web_service_url.startswith("http"):
-                raise ValueError("BEST_LOGGER_WEB_SERVICE_URL must start with http or https")
-            if not best_logger_web_service_url.endswith("/"):
-                best_logger_web_service_url += "/"
-            abs_path = os.path.abspath(base_log_path)
-            logger.warning(
-                f"\n********************************\n"
-                f"Log will be served at:\n\t{best_logger_web_service_url}?path={abs_path}"
-                f"\n********************************\n"
-            )
-            time.sleep(2)
+    if best_logger_web_service_url:
+        if not best_logger_web_service_url.startswith("http"):
+            raise ValueError("BEST_LOGGER_WEB_SERVICE_URL must start with http or https")
+        if not best_logger_web_service_url.endswith("/"):
+            best_logger_web_service_url += "/"
+        abs_path = os.path.abspath(base_log_path)
+        logger.warning(
+            f"\n********************************\n"
+            f"Log will be served at:\n\t{best_logger_web_service_url}?path={abs_path}"
+            f"\n********************************\n"
+        )
+        time.sleep(2)
 
     regular_log_path = os.path.join(base_log_path, "regular", "regular.log")
     logger.add(regular_log_path, rotation="50 MB", enqueue=True, filter=is_not_non_console_mod)

@@ -36,6 +36,9 @@ def print_list(arr, header="", mod="", narrow=False, attach=None) -> None:
     return result
 
 def _log_final_exe(mod=None, buf="", color=None, header=None, attach=None):
+    if LoggerConfig.handler_cnt != len(logger._core.handlers):
+        print("\n******************************\nWarning! Somewhere or someone has changed the logger handlers, restoring configuration...\n******************************\n")
+        register_logger(**LoggerConfig.register_kwargs)
     if header is not None or color is not None:
         assert mod is not None
     if mod:

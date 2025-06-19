@@ -44,18 +44,24 @@ def install_lock_file():
                 os.remove(lock_file_path)
                 print('removing outdated lock')
             else:
-                # 如果进程存在，则抛出异常
-                raise RuntimeError(f"Logger is already running with PID {pid}. Please use another directory for `base_log_path`.")
+                this_pid = os.getpid()
+                if base_log_path.endswith("/"):
+                    base_log_path = base_log_path[:-1]
+                base_log_path = base_log_path + f"_{this_pid}"
+                print(f"Logger is already running with PID {pid}. Using a new directory: {base_log_path} for `base_log_path`.")
+                # # 如果进程存在，则抛出异常
+                # raise RuntimeError(f"Logger is already running with PID {pid}. Please use another directory for `base_log_path`.")
         if pid and int(pid) == os.getpid():
             print('updating logger running inside same process')
     with open(lock_file_path, "w+") as f:
         f.write(str(os.getpid()))
-    return
+    return base_log_path
 
 def uninstall_lock_file():
-    lock_file_path = os.path.join(LoggerConfig.register_kwargs['base_log_path'], ".logger_lock")
-    if os.path.exists(lock_file_path):
-        os.remove(lock_file_path)
+    if 'base_log_path' in LoggerConfig.register_kwargs:
+        lock_file_path = os.path.join(LoggerConfig.register_kwargs['base_log_path'], ".logger_lock")
+        if os.path.exists(lock_file_path):
+            os.remove(lock_file_path)
     return
 
 atexit.register(uninstall_lock_file)
@@ -77,7 +83,7 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
         "auto_clean_mods": auto_clean_mods,
         "debug": debug,
     }
-    install_lock_file()
+    base_log_path = install_lock_file()
     def is_not_non_console_mod(record):
         extra_keys = list(record["extra"].keys())
         if not extra_keys:

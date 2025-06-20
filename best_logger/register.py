@@ -17,7 +17,7 @@ def singleton(cls):
 class LoggerConfig(object):
     registered_mods = []
     register_kwargs = {}
-    handler_cnt = 0
+    handler_cnt = -1
 
 
 def change_base_log_path(base_log_path):

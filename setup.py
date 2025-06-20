@@ -4,7 +4,7 @@ import os
 
 # 读取版本号
 def get_version():
-    version_match = "0.0.5"
+    version_match = "0.0.7"
     return version_match
 
 version = get_version()

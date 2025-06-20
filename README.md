@@ -2,6 +2,23 @@
 
 Log data as tables, and then render them as entries in web log viewer with extremely simple functions !
 
+## Additional Features
+
+### `best_logger.print_basic`
+- Format and log lists, dictionaries, nested dictionaries, and other structures using richly styled tables.
+- Functions:
+  - `print_list`: Log lists in a structured table format.
+  - `print_dict`: Log flat dictionaries with keys and values.
+  - `print_listofdict`: Log a list of dictionaries as rows in a table.
+  - `print_dictofdict`: Log nested dictionaries as a table.
+  - `sprintf_nested_structure`: View nested structures hierarchically in plain text.
+
+### `best_logger.print_tensor`
+- Specialized features for PyTorch tensors:
+  - `print_tensor`: Log tensor attributes (shape, dtype, device) with a preview.
+  - `print_tensor_dict`: Log a dictionary of tensors with detailed attributes (handles exceptions gracefully).
+- Automatically limits preview content for long tensors.
+
 ```python
 from best_logger import *
 

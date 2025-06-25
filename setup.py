@@ -35,7 +35,7 @@ setup(
     description="A package for advanced logging and visualization of Python objects, especially tensors.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="",
+    url="https://github.com/beast-logger",
     packages=find_packages(),
     include_package_data=True,
     package_data={"": extra_files},
@@ -63,7 +63,7 @@ setup(
         ],
     },
     project_urls={
-        "Bug Reports": "",
-        "Source": "",
+        "Bug Reports": "https://github.com/beast-logger/issues",
+        "Source": "https://github.com/beast-logger",
     },
 )

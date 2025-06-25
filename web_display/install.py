@@ -16,7 +16,7 @@ def start_web_display(port=8181):
     while True:
         time.sleep(999)
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
     else:
@@ -25,3 +25,5 @@ if __name__ == "__main__":
     print(f"hint: you can use `python -m web_display.go {port}` to skip installation, if this is not the first time you run it.")
     start_web_display(port)
 
+if __name__ == "__main__":
+    main()

@@ -16,11 +16,14 @@ def start_web_display(port=8181):
     while True:
         time.sleep(999)
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
     else:
         port = 8181
     print(f"Starting web display on port {port}...")
     start_web_display(port)
+
+if __name__ == "__main__":
+    main()
 

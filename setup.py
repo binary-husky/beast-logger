@@ -3,7 +3,7 @@ import re
 import os
 
 def get_version():
-    version_match = "0.0.8"
+    version_match = "0.0.11"
     return version_match
 
 version = get_version()
@@ -58,8 +58,8 @@ setup(
     install_requires=open("requirements.txt").read().splitlines(),
     entry_points={
         "console_scripts": [
-            "logger_web_display_install=web_display.install",
-            "logger_web_display=web_display.go",
+            "beast_logger_install=web_display.install:main",
+            "beast_logger_go=web_display.go:main",
         ],
     },
     project_urls={

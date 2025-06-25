@@ -3,7 +3,7 @@ import re
 import os
 
 def get_version():
-    version_match = "0.0.12"
+    version_match = "0.0.13"
     return version_match
 
 version = get_version()

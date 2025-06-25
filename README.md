@@ -133,11 +133,11 @@ print_dict({
 
 - launch web display on port 8181 (first time)
 
-    `python -m web_display.install 8181`
+    `python -m web_display.install 8181` or simply `beast_logger_install`
 
 - launch web display on port 8181 (skip npm install)
 
-    `python -m web_display.go 8181`
+    `python -m web_display.go 8181` or simply `beast_logger_go`
 
 - open in browser
 
@@ -164,4 +164,7 @@ rm -rf build
 rm -rf dist
 python setup.py sdist bdist_wheel
 twine upload dist/*
+
+pip install ssh://root@22.5.102.82/mnt/data_cpfs/fuqingxu/code_dev/BeyondAgent/third_party/best-logger/dist/beast_logger-0.0.12-py3-none-any.whl
+
 -->

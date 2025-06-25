@@ -104,8 +104,7 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
     best_logger_web_service_url = os.environ.get("BEST_LOGGER_WEB_SERVICE_URL", None)
     if not registered_before:
         logger.warning(f"\n********************************\n"
-                    f"You can run following command to serve logs with web app:\n\tpython -m web_display.install\n"
-                    f"(if nvm is not installed yet, run `wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash` first)"
+                    f"Run following command (in another console) to serve logs with web viewer:\n\t`beast_logger_install`"
                     f"\n********************************\n"
         )
     if best_logger_web_service_url:
@@ -117,6 +116,14 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
         logger.warning(
             f"\n********************************\n"
             f"Log will be served at:\n\t{best_logger_web_service_url}?path={abs_path}"
+            f"\n********************************\n"
+        )
+        time.sleep(2)
+    else:
+        abs_path = os.path.abspath(base_log_path)
+        logger.warning(
+            f"\n********************************\n"
+            f"Note: If you run `beast_logger_install` in another console, you can open and view logs at url:\n\thttp://localhost:8181/?path={abs_path}"
             f"\n********************************\n"
         )
         time.sleep(2)

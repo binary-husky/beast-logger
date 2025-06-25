@@ -56,7 +56,7 @@ function scanLogFiles(dir: string): Array<{name: string, path: string, size: num
     
     if (entry.isDirectory()) {
       files.push(...scanLogFiles(fullPath));
-    } else if (entry.isFile() && entry.name.endsWith('.json.log')) {
+    } else if (entry.isFile() && (entry.name.includes('.json.') && entry.name.endsWith('.log'))) {
       const stats = fs.statSync(fullPath);
       files.push({
         name: entry.name,

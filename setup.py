@@ -2,9 +2,8 @@ from setuptools import setup, find_packages
 import re
 import os
 
-# 读取版本号
 def get_version():
-    version_match = "0.0.7"
+    version_match = "0.0.8"
     return version_match
 
 version = get_version()
@@ -25,7 +24,6 @@ extra_files = package_files(
     black_list=['node_modules', 'logs', 'dist', 'build', '__pycache__']
 )
 
-# 读取长描述
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
@@ -34,10 +32,10 @@ setup(
     version=version,
     author="qingxu.fu@alibaba-inc.com",
     author_email="qingxu.fu@alibaba-inc.com",
-    description="A package for atomic evaluation tools and utilities",
+    description="A package for advanced logging and visualization of Python objects, especially tensors.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://code.alibaba-inc.com/DAIL-LLM/best_logger",
+    url="",
     packages=find_packages(),
     include_package_data=True,
     package_data={"": extra_files},
@@ -60,11 +58,12 @@ setup(
     install_requires=open("requirements.txt").read().splitlines(),
     entry_points={
         "console_scripts": [
-            # "best-logger-web=best_logger.web_launcher:main",
+            "logger_web_display_install=web_display.install",
+            "logger_web_display=web_display.go",
         ],
     },
     project_urls={
-        "Bug Reports": "https://code.alibaba-inc.com/DAIL-LLM/best_logger/issues",
-        "Source": "https://code.alibaba-inc.com/DAIL-LLM/best_logger",
+        "Bug Reports": "",
+        "Source": "",
     },
 )

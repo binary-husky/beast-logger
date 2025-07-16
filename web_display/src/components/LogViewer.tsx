@@ -187,14 +187,14 @@ const LogViewer: React.FC<LogViewerProps> = ({
       }}>
         {selectedEntry ? (
           selectedEntry.nested ? (
-            <EntryViewer
+            <NestedEntryViewer
               selectedEntry={selectedEntry}
               fontSize={fontSize}
               getLevelColor={getLevelColor}
               copyAttachToClipboard={copyAttachToClipboard}
             />
           ) : (
-            <NestedEntryViewer
+            <EntryViewer
               selectedEntry={selectedEntry}
               fontSize={fontSize}
               getLevelColor={getLevelColor}

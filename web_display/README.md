@@ -1,4 +1,10 @@
+## how to debug:
 
+npm run compile
+REACT_APP_FPORT=8181 npm run start
+npm run start:dev
+
+##
 
 readLogFile
 

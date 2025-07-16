@@ -50,9 +50,15 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
   const [selectedSelectors, setSelectedSelectors] = useState<string[]>([]);
   const [dataTable, setDataTable] = useState<TableRowData[]>([]);
   const [dataTableDisplay, setDataTableDisplay] = useState<TableRowData[]>([]);
+  const [availableColumns, setAvailableColumns] = useState<string[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
   const onSelectorsChange = (checkedValues: string[]) => {
     setSelectedSelectors(checkedValues);
+  };
+
+  const onColumnsChange = (checkedValues: string[]) => {
+    setSelectedColumns(checkedValues);
   };
 
   // Initial load of log files and data table generation
@@ -76,6 +82,13 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
         tableData.push(rowData);
       }
     });
+
+    // Get available columns from first row
+    if (tableData.length > 0) {
+      const columns = Object.keys(tableData[0]).filter(key => key !== 'key' && key !== 'selector');
+      setAvailableColumns(columns);
+      setSelectedColumns(columns);
+    }
 
     setDataTable(tableData);
     setDataTableDisplay(tableData);
@@ -132,6 +145,20 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
       </div>
 
       {/* selector checkboxes - control display table cols */}
+      <div style={{ marginBottom: '16px' }}>
+        <Checkbox.Group
+          style={{ width: '100%' }}
+          value={selectedColumns}
+          onChange={onColumnsChange}>
+          <Row>
+            {availableColumns.map((column) => (
+              <Col span={8} key={column}>
+                <Checkbox value={column}>{column}</Checkbox>
+              </Col>
+            ))}
+          </Row>
+        </Checkbox.Group>
+      </div>
 
 
       {/* display table */}
@@ -144,10 +171,8 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
               key: 'selector',
               sorter: (a, b) => a.selector.localeCompare(b.selector)
             },
-            ...(dataTableDisplay.length > 0
-              ? Object.keys(dataTableDisplay[0])
-                  .filter(key => key !== 'key' && key !== 'selector')
-                  .map(key => ({
+            ...(dataTableDisplay.length > 0 && selectedColumns.length > 0
+              ? selectedColumns.map(key => ({
                     title: key,
                     dataIndex: key,
                     key: key,

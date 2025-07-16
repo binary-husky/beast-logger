@@ -49,6 +49,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
   const [selectors, setSelectors] = useState<string[]>([]);
   const [selectedSelectors, setSelectedSelectors] = useState<string[]>([]);
   const [dataTable, setDataTable] = useState<TableRowData[]>([]);
+  const [dataTableDisplay, setDataTableDisplay] = useState<TableRowData[]>([]);
 
   const onSelectorsChange = (checkedValues: string[]) => {
     setSelectedSelectors(checkedValues);
@@ -77,7 +78,17 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
     });
 
     setDataTable(tableData);
+    setDataTableDisplay(tableData);
   }, [selectedEntry]); // Re-run when selectedEntry changes
+
+  // Filter dataTable based on selectedSelectors
+  useEffect(() => {
+    const filteredData = dataTable.filter(row => {
+      const selectorParts = row.selector.split('.');
+      return selectorParts.every(part => selectedSelectors.includes(part));
+    });
+    setDataTableDisplay(filteredData);
+  }, [dataTable, selectedSelectors]); // Re-run when dataTable or selectedSelectors changes
 
   return (
     <div>
@@ -104,7 +115,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
         </div>
       </div>
 
-      {/* selector checkboxes */}
+      {/* selector checkboxes - control display table rows */}
       <div style={{ marginBottom: '16px' }}>
         <Checkbox.Group
           style={{ width: '100%' }}
@@ -120,6 +131,9 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
         </Checkbox.Group>
       </div>
 
+      {/* selector checkboxes - control display table cols */}
+
+
       {/* display table */}
       <div style={{ marginBottom: '16px' }}>
         <Table<TableRowData>
@@ -130,8 +144,8 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
               key: 'selector',
               sorter: (a, b) => a.selector.localeCompare(b.selector)
             },
-            ...(dataTable.length > 0
-              ? Object.keys(dataTable[0])
+            ...(dataTableDisplay.length > 0
+              ? Object.keys(dataTableDisplay[0])
                   .filter(key => key !== 'key' && key !== 'selector')
                   .map(key => ({
                     title: key,
@@ -142,7 +156,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
                   }))
               : [])
           ]}
-          dataSource={dataTable}
+          dataSource={dataTableDisplay}
           size="small"
           scroll={{ x: true }}
           pagination={false}

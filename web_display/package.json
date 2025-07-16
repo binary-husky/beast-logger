@@ -32,7 +32,7 @@
     "build": "react-scripts build",
     "compile": "tsc --project tsconfig.server.json",
     "build:all": "npm run build && npm run compile",
-    "start:dev": "react-scripts start"
+    "start:dev": "DANGEROUSLY_DISABLE_HOST_CHECK=true react-scripts start"
   },
   "proxy": "http://localhost:8181",
   "eslintConfig": {

@@ -1,6 +1,13 @@
 from best_logger import *
 
 register_logger(mods=["abc"])
+# logger.info = lambda x: print_dict({"content": x}, header="info Log", mod="abc")
+# logger.warning = lambda x: print_dict({"content": x}, header="warning Log", mod="abc")
+# logger.debug = lambda x: print_dict({"content": x}, header="debug Log", mod="abc")
+# logger.success = lambda x: print_dict({"content": x}, header="success Log", mod="abc")
+# logger.error = lambda x: print_dict({"content": x}, header="error Log", mod="abc")
+
+logger.info("This is an info log message.")
 print_dictofdict({
     'sample-1':{
         "a": 1,

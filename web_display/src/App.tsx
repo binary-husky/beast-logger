@@ -45,7 +45,7 @@ function App() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/logs/content?` + 
+        `/api/logs/content?` +
         `path=${encodeURIComponent(file.path)}&` +
         `page=${page}&` +
         `num_entity_each_page=${PAGE_SIZE}`
@@ -67,7 +67,7 @@ function App() {
   // Function to fetch log files list
   const fetchLogFiles = useCallback(async (path?: string) => {
     try {
-      const url = path 
+      const url = path
         ? `/api/logs/files?path=${encodeURIComponent(path)}`
         : `/api/logs/files`;
       const response = await fetch(url);
@@ -86,10 +86,10 @@ function App() {
       const url = new URL(window.location.href);
       url.searchParams.set('path', pathInput.trim());
       window.history.pushState({}, '', url.toString());
-      
+
       // Fetch log files with the new path
       fetchLogFiles(pathInput.trim());
-      
+
       // Close the modal
       setShowPathInput(false);
     }
@@ -100,7 +100,7 @@ function App() {
     // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const path = urlParams.get('path');
-    
+
     if (!path) {
       // If path is missing, show the input popup
       setShowPathInput(true);
@@ -109,24 +109,6 @@ function App() {
       fetchLogFiles(path);
     }
 
-    // // Set up WebSocket connection for real-time updates
-    // const ws = new WebSocket(`ws://${window.location.host}/ws`);
-    
-    // ws.onmessage = (event) => {
-    //   const data = JSON.parse(event.data);
-      
-    //   if (data.type === 'FILE_CHANGED' && data.path === selectedFile?.path && selectedFile) {
-    //     readLogFile(selectedFile);
-    //   } else if (data.type === 'FILES_CHANGED') {
-    //     const urlParams = new URLSearchParams(window.location.search);
-    //     const path = urlParams.get('path');
-    //     fetchLogFiles(path || undefined);
-    //   }
-    // };
-
-    // return () => {
-    //   ws.close();
-    // };
   }, [fetchLogFiles, readLogFile]); // Include all dependencies
 
   // Initial load of log files
@@ -160,6 +142,7 @@ function App() {
     <>
       <Layout style={{ minHeight: '100vh' }}>
         <Sider width={200} theme="light">
+          {/* 这是文件选择栏 */}
           <LogFileList
             files={files}
             onFileSelect={handleFileSelect}
@@ -167,9 +150,10 @@ function App() {
           />
         </Sider>
         <Content>
+          {/* 这是日志展示栏，包括条目选择侧边栏和展示 */}
           {selectedFile ? (
-            <LogViewer 
-              entries={logEntries} 
+            <LogViewer
+              entries={logEntries}
               isLoading={isLoading}
               onPageChange={(page) => {
                 setCurrentPage(page);
@@ -181,6 +165,7 @@ function App() {
               currentPage={currentPage}
             />
           ) : (
+            // 没有选择文件时的空状态
             <div style={{
               height: '100%',
               display: 'flex',
@@ -210,7 +195,7 @@ function App() {
         keyboard={false}
       >
         <p>Please enter the path to your log directory:</p>
-        <Input 
+        <Input
           value={pathInput}
           onChange={(e) => setPathInput(e.target.value)}
           placeholder="Enter path"

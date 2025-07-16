@@ -75,11 +75,16 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
 
     Object.entries(selectedEntry.nested_json).forEach(([key, value], index) => {
       if (typeof value === 'object' && value !== null) {
+        const processedValue = { ...value };
+        if (processedValue.content && typeof processedValue.content !== 'string') {
+          processedValue.content = JSON.stringify(processedValue.content);
+        }
         const rowData = {
           key: index,
           selector: key,
-          ...value
+          ...processedValue
         } as TableRowData;
+        console.log(rowData);
         tableData.push(rowData);
       }
     });

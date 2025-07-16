@@ -52,6 +52,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
   const [dataTableDisplay, setDataTableDisplay] = useState<TableRowData[]>([]);
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [selectedRowContent, setSelectedRowContent] = useState<string>('');
 
   const onSelectorsChange = (checkedValues: string[]) => {
     setSelectedSelectors(checkedValues);
@@ -169,7 +170,12 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
               title: 'Selector',
               dataIndex: 'selector',
               key: 'selector',
-              sorter: (a, b) => a.selector.localeCompare(b.selector)
+              sorter: (a, b) => a.selector.localeCompare(b.selector),
+              render: (text, record) => (
+                <a onClick={() => setSelectedRowContent(record.content || '')}>
+                  {text}
+                </a>
+              )
             },
             ...(dataTableDisplay.length > 0 && selectedColumns.length > 0
               ? selectedColumns.map(key => ({
@@ -187,6 +193,25 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
           pagination={false}
         />
       </div>
+
+      {/* main content selected*/}
+      {selectedRowContent && (
+        <pre
+          style={{
+            margin: '0 0 16px 0',
+            whiteSpace: 'pre-wrap',
+            overflowX: 'auto',
+            backgroundColor: '#f5f5f5',
+            padding: '12px',
+            borderRadius: '4px',
+            border: '1px solid #e8e8e8',
+            fontFamily: 'monospace',
+            fontSize: `${fontSize}px`
+          }}>
+          {selectedRowContent}
+        </pre>
+      )}
+
 
       {/* main content */}
       <pre

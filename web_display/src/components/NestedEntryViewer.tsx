@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Badge, Button, Checkbox, Col, Row, Table } from 'antd';
+import { Badge, Button, Checkbox, Col, Row, Table, Pagination } from 'antd';
 import type { TableColumnsType } from 'antd';
 import type { GetProp } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
@@ -53,6 +53,8 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [selectedRowContent, setSelectedRowContent] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 500;
 
   const onSelectorsChange = (checkedValues: string[]) => {
     setSelectedSelectors(checkedValues);
@@ -177,7 +179,10 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
               key: 'selector',
               sorter: (a, b) => a.selector.localeCompare(b.selector),
               render: (text, record) => (
-                <a onClick={() => setSelectedRowContent(record.content || '')}>
+                <a onClick={() => {
+                  setSelectedRowContent(record.content || '');
+                  setCurrentPage(1);
+                }}>
                   {text}
                 </a>
               )
@@ -205,20 +210,32 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
           const data = JSON.parse(selectedRowContent);
           if (data.text && data.count && data.color &&
               Array.isArray(data.text) && Array.isArray(data.count) && Array.isArray(data.color)) {
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+
             return (
-              <p style={{ display: "flex", gap: "4px" }}>
-                {data.text.map((text: string, index: number) => (
-                  <Badge
-                    key={index}
-                    count={data.count[index]}
-                    text={text}
-                    title="tt2"
-                    overflowCount={1e99}
-                    showZero
-                    color={data.color[index]}
-                  />
-                ))}
-              </p>
+              <div>
+                <p style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                  {data.text.slice(startIndex, endIndex).map((text: string, index: number) => (
+                    <Badge
+                      key={startIndex + index}
+                      count={data.count[startIndex + index]}
+                      text={text}
+                      title="tt2"
+                      overflowCount={1e99}
+                      showZero
+                      color={data.color[startIndex + index]}
+                    />
+                  ))}
+                </p>
+                <Pagination
+                  current={currentPage}
+                  onChange={(page) => setCurrentPage(page)}
+                  total={data.text.length}
+                  pageSize={pageSize}
+                  style={{ marginTop: '8px' }}
+                />
+              </div>
             );
           }
         } catch (e) {

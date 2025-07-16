@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Checkbox, Col, Row } from 'antd';
+import { Button, Checkbox, Col, Row, Table } from 'antd';
+import type { TableColumnsType } from 'antd';
 import type { GetProp } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { LogEntry } from '../types';
@@ -11,19 +12,17 @@ interface EntryViewerProps {
   copyAttachToClipboard: () => void;
 }
 
+interface TableRowData {
+  key: number;
+  selector: string;
+  content?: string;
+  col1?: string;
+  col2?: string;
+  col3?: string;
+  [key: string]: string | number | undefined;
+}
 
 function getAllKeyElements(nestedJson: object | null): string[] {
-
-  // 使用示例
-  // const selectedEntry = {
-  //   nested_json: {
-  //     "A1.B2.C3": {"col1": "value1", "col2": "value2", "col3": "value3", "content": "ABCABC"},
-  //     "A1.B2.C4": {"col1": "value4", "col2": "value5", "col3": "value6", "content": "ABCABC"}
-  //   }
-  // };
-
-  // const result = getAllKeyElements(selectedEntry.nested_json);
-  // console.log(result); // 输出: ["A1", "B2", "C3", "C4"]
   if (!nestedJson) {
     return [];
   }
@@ -49,28 +48,36 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
   const logContentRef = useRef<HTMLPreElement>(null);
   const [selectors, setSelectors] = useState<string[]>([]);
   const [selectedSelectors, setSelectedSelectors] = useState<string[]>([]);
+  const [dataTable, setDataTable] = useState<TableRowData[]>([]);
 
   const onSelectorsChange = (checkedValues: string[]) => {
     setSelectedSelectors(checkedValues);
   };
 
-  // selectedEntry.nested_json example
-  // {"header": "这个是NEST", "color": "#337711", "content": "这是主内容", "attach": "这是附加内容3", "nested": true,
-  // "nested_json":{
-  //  "A1.B2.C3": {"col1": "value1", "col2": "value2", "col3": "value3", "content": "ABCABC"},
-  //  "A1.B2.C4": {"col1": "value4", "col2": "value5", "col3": "value6", "content": "ABCABC"}
-  // }}
-
-  // Initial load of log files
+  // Initial load of log files and data table generation
   useEffect(() => {
+    if (!selectedEntry.nested_json) return;
 
     const element_array = getAllKeyElements(selectedEntry.nested_json);
     setSelectors(element_array);
+    setSelectedSelectors(element_array);
 
+    // Convert nested_json to data table
+    const tableData: TableRowData[] = [];
+
+    Object.entries(selectedEntry.nested_json).forEach(([key, value], index) => {
+      if (typeof value === 'object' && value !== null) {
+        const rowData = {
+          key: index,
+          selector: key,
+          ...value
+        } as TableRowData;
+        tableData.push(rowData);
+      }
+    });
+
+    setDataTable(tableData);
   }, [selectedEntry]); // Re-run when selectedEntry changes
-
-
-
 
   return (
     <div>
@@ -111,6 +118,35 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
             ))}
           </Row>
         </Checkbox.Group>
+      </div>
+
+      {/* display table */}
+      <div style={{ marginBottom: '16px' }}>
+        <Table<TableRowData>
+          columns={[
+            {
+              title: 'Selector',
+              dataIndex: 'selector',
+              key: 'selector',
+              sorter: (a, b) => a.selector.localeCompare(b.selector)
+            },
+            ...(dataTable.length > 0
+              ? Object.keys(dataTable[0])
+                  .filter(key => key !== 'key' && key !== 'selector')
+                  .map(key => ({
+                    title: key,
+                    dataIndex: key,
+                    key: key,
+                    sorter: (a: TableRowData, b: TableRowData) =>
+                      ((a[key] as string) || '').localeCompare((b[key] as string) || '')
+                  }))
+              : [])
+          ]}
+          dataSource={dataTable}
+          size="small"
+          scroll={{ x: true }}
+          pagination={false}
+        />
       </div>
 
       {/* main content */}

@@ -11,4 +11,4 @@
 2025-05-02 22:47:43.023 | INFO     | __main__:<module>:199 -
 {"header": "这个是Header 5", "color": "#3333cc", "content": "这是主内容", "attach": "这是附加内容3"}
 2025-05-02 22:47:43.023 | INFO     | __main__:<module>:199 -
-{"header": "这个是NEST", "color": "#337711", "content": "这是主内容", "attach": "这是附加内容3", "nested": true, "nested_json":{"A1.B2.C3": {"col1": "value1", "col2": "value2", "col3": "value3", "content": {"words":["I", "love", "apple", "and", "cakes", "."], "entropy_level":[1,2,3,4,5,6]}},"A1.B2.C4": {"col1": "value4", "col2": "value5", "col3": "value6", "content": "ABCABC222"}}}
+{"header": "这个是NEST", "color": "#337711", "content": "这是主内容", "attach": "这是附加内容3", "nested": true, "nested_json":{"A1.B2.C3": {"col1": "value1", "col2": "value2", "col3": "value3", "content":{"text":["The", "Cake", "Is", "A", "Lie", "."], "count":["A000", "B111", "C222", "D333", "E444", "F555"], "color":["#fa1111", "#fa1111", "#fa1111", "#fa1111", "#fa1111", "#fa1111"]}},"A1.B2.C4": {"col1": "value4", "col2": "value5", "col3": "value6", "content": "ABCABC222"}}}

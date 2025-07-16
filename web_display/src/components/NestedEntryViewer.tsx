@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Checkbox, Col, Row, Table } from 'antd';
+import { Badge, Button, Checkbox, Col, Row, Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 import type { GetProp } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
@@ -200,22 +200,48 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
       </div>
 
       {/* main content selected*/}
-      {selectedRowContent && (
-        <pre
-          style={{
-            margin: '0 0 16px 0',
-            whiteSpace: 'pre-wrap',
-            overflowX: 'auto',
-            backgroundColor: '#f5f5f5',
-            padding: '12px',
-            borderRadius: '4px',
-            border: '1px solid #e8e8e8',
-            fontFamily: 'monospace',
-            fontSize: `${fontSize}px`
-          }}>
-          {selectedRowContent}
-        </pre>
-      )}
+      {selectedRowContent && (() => {
+        try {
+          const data = JSON.parse(selectedRowContent);
+          if (data.text && data.count && data.color &&
+              Array.isArray(data.text) && Array.isArray(data.count) && Array.isArray(data.color)) {
+            return (
+              <p style={{ display: "flex", gap: "4px" }}>
+                {data.text.map((text: string, index: number) => (
+                  <Badge
+                    key={index}
+                    count={data.count[index]}
+                    text={text}
+                    title="tt2"
+                    overflowCount={1e99}
+                    showZero
+                    color={data.color[index]}
+                  />
+                ))}
+              </p>
+            );
+          }
+        } catch (e) {
+          // If JSON parsing fails or data structure is invalid, fall back to raw display
+        }
+
+        return (
+          <pre
+            style={{
+              margin: '0 0 16px 0',
+              whiteSpace: 'pre-wrap',
+              overflowX: 'auto',
+              backgroundColor: '#f5f5f5',
+              padding: '12px',
+              borderRadius: '4px',
+              border: '1px solid #e8e8e8',
+              fontFamily: 'monospace',
+              fontSize: `${fontSize}px`
+            }}>
+            {selectedRowContent}
+          </pre>
+        );
+      })()}
 
 
       {/* main content */}

@@ -2,7 +2,8 @@
 
 npm run compile
 REACT_APP_FPORT=8181 npm run start
-npm run start:dev
+
+REACT_APP_DEBUG_FILE_SERVER='http://localhost:8181' npm run start:dev
 
 ##
 

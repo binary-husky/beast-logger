@@ -44,8 +44,10 @@ function App() {
   const readLogFile = useCallback(async (file: LogFile, page: number = 1) => {
     setIsLoading(true);
     try {
+      const debugFileServer = process.env.REACT_APP_DEBUG_FILE_SERVER;
+      const baseUrl = debugFileServer || '';
       const response = await fetch(
-        `/api/logs/content?` +
+        `${baseUrl}/api/logs/content?` +
         `path=${encodeURIComponent(file.path)}&` +
         `page=${page}&` +
         `num_entity_each_page=${PAGE_SIZE}`
@@ -67,9 +69,11 @@ function App() {
   // Function to fetch log files list
   const fetchLogFiles = useCallback(async (path?: string) => {
     try {
+      const debugFileServer = process.env.REACT_APP_DEBUG_FILE_SERVER;
+      const baseUrl = debugFileServer || '';
       const url = path
-        ? `/api/logs/files?path=${encodeURIComponent(path)}`
-        : `/api/logs/files`;
+        ? `${baseUrl}/api/logs/files?path=${encodeURIComponent(path)}`
+        : `${baseUrl}/api/logs/files`;
       const response = await fetch(url);
       const data = await response.json();
       setFiles(data);
@@ -116,7 +120,7 @@ function App() {
     // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const selectedFilePath = urlParams.get('selectedFilePath');
-    if (files){
+    if (files) {
       // Find the file in the fetched files
       const fileToSelect = files.find(file => file.path === selectedFilePath);
       if (fileToSelect) {

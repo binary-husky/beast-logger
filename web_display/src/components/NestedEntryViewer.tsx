@@ -54,7 +54,153 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [selectedRowContent, setSelectedRowContent] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 500;
+  const [pageSize, setPageSize] = useState(700);
+  const [showRichText, setShowRichText] = useState(true);
+  const [showPureText, setShowPureText] = useState(true);
+
+  // Styles for paragraphs
+  const paragraphStyle: React.CSSProperties = {
+    display: "flex",
+    gap: "4px",
+    flexWrap: "wrap",
+    margin: "0px 0px 10px 0px"
+  };
+  const smallParagraphStyle: React.CSSProperties = {
+    display: "flex",
+    gap: "4px",
+    flexWrap: "wrap",
+    margin: "0px 0px 0px 0px"
+  };
+
+  const fallbackPreStyle: React.CSSProperties = {
+    margin: '0 0 16px 0',
+    whiteSpace: 'pre-wrap',
+    overflowX: 'auto',
+    backgroundColor: '#f5f5f5',
+    padding: '12px',
+    borderRadius: '4px',
+    border: '1px solid #e8e8e8',
+    fontFamily: 'monospace',
+    fontSize: `${fontSize}px`
+  };
+
+  // Create badge element with tooltip
+  const createBadgeElement = (text: string, globalIndex: number, data: any) => {
+    const tooltipTitle = data.title && Array.isArray(data.title) && data.title[globalIndex]
+      ? data.title[globalIndex]
+      : text;
+
+    return (
+      <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+        {/* <Tooltip title={tooltipTitle} mouseEnterDelay={0.5} key={globalIndex}>
+          <Badge
+            count={data.count[globalIndex]}
+            text={text}
+            overflowCount={1e99}
+            showZero
+            color={data.color[globalIndex]}
+          />
+        </Tooltip> */}
+
+        <Badge
+          count={data.count[globalIndex]}
+          text={text}
+          title={tooltipTitle}
+          overflowCount={1e99}
+          showZero
+          color={data.color[globalIndex]}
+        />
+      </div>
+    );
+  };
+
+  // Create paragraph element
+  const createParagraphElement = (
+    currentParagraph: React.ReactElement[],
+    currentText: string[],
+    paragraphCount: number,
+    showRichText: boolean,
+    showPureText: boolean
+  ) => {
+    const isBigBreak = showPureText;
+    return (
+      <>
+        {/* begin rich text display */}
+        {showRichText && (
+          <p key={`paragraph-${paragraphCount}`} style={isBigBreak ? paragraphStyle:smallParagraphStyle }>
+            {currentParagraph}
+          </p>
+        )}
+        {/* end rich text display */}
+
+        {/* begin pure text display */}
+        {showPureText && (
+          <>
+            <hr style={{ margin: '4px 0', border: 0, borderTop: '1px dotted rgb(229, 19, 19)' }} />
+            <p key={`paragraph-${paragraphCount}`} style={paragraphStyle}>
+              <span style={{ whiteSpace: 'pre-wrap' }}>
+                {currentText.length > 0 ? currentText.join('') : ''}
+              </span>
+            </p>
+          </>
+        )}
+        {/* end pure text display */}
+
+        {showRichText && isBigBreak && (
+          <hr style={{ margin: '16px 0', border: 0, borderTop: '2px solid rgb(0, 228, 38)' }} />
+        )}
+      </>
+    );
+  };
+
+  // Process content and return elements
+  const processContent = (data: any, startIndex: number, endIndex: number) => {
+    const elements: React.ReactElement[] = [];
+    let currentParagraph: React.ReactElement[] = [];
+    let currentText: string[] = [];
+    let paragraphCount = 0;
+
+    data.text.slice(startIndex, endIndex).forEach((text: string, index: number) => {
+      const globalIndex = startIndex + index;
+      const badge = createBadgeElement(text, globalIndex, data);
+
+      if (text === '<|im_end|>' || text.includes('\n\n')) {
+        if (currentParagraph.length > 0) {
+          currentParagraph.push(badge);
+          currentText.push(text);
+
+          elements.push(createParagraphElement(
+            currentParagraph,
+            currentText,
+            paragraphCount,
+            showRichText,
+            text === '<|im_end|>' ? showPureText : false
+          ));
+
+          currentParagraph = [];
+          currentText = text === '<|im_end|>' ? [] : currentText;
+          paragraphCount++;
+        }
+      } else {
+        currentParagraph.push(badge);
+        currentText.push(text);
+      }
+    });
+
+    // Handle last paragraph if it exists
+    if (currentParagraph.length > 0) {
+      elements.push(createParagraphElement(
+        currentParagraph,
+        currentText,
+        paragraphCount,
+        showRichText,
+        showPureText
+      ));
+    }
+
+    return elements;
+  };
+
 
   const onSelectorsChange = (checkedValues: string[]) => {
     setSelectedSelectors(checkedValues);
@@ -69,6 +215,11 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
     if (!selectedEntry.nested_json) return;
 
     const element_array = getAllKeyElements(selectedEntry.nested_json);
+
+    // sort element_array alphabetically
+    element_array.sort((a, b) => a.localeCompare(b));
+
+
     setSelectors(element_array);
     setSelectedSelectors(element_array);
 
@@ -95,7 +246,8 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
     if (tableData.length > 0) {
       const columns = Object.keys(tableData[0]).filter(key => key !== 'key' && key !== 'selector');
       setAvailableColumns(columns);
-      setSelectedColumns(columns);
+      // Make 'content' column default not selected
+      setSelectedColumns(columns.filter(col => col !== 'content'));
     }
 
     setDataTable(tableData);
@@ -137,6 +289,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
       </div>
 
       {/* selector checkboxes - control display table rows */}
+      <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>control display table items</div>
       <div style={{ marginBottom: '16px' }}>
         <Checkbox.Group
           style={{ width: '100%' }}
@@ -152,6 +305,8 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
         </Checkbox.Group>
       </div>
 
+      <hr style={{ margin: '16px 0', border: 0, borderTop: '1px solid #e8e8e8' }} />
+      <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>control display table cols</div>
       {/* selector checkboxes - control display table cols */}
       <div style={{ marginBottom: '16px' }}>
         <Checkbox.Group
@@ -189,12 +344,12 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
             },
             ...(dataTableDisplay.length > 0 && selectedColumns.length > 0
               ? selectedColumns.map(key => ({
-                    title: key,
-                    dataIndex: key,
-                    key: key,
-                    sorter: (a: TableRowData, b: TableRowData) =>
-                      ((a[key] as string) || '').localeCompare((b[key] as string) || '')
-                  }))
+                title: key,
+                dataIndex: key,
+                key: key,
+                sorter: (a: TableRowData, b: TableRowData) =>
+                  ((a[key] as string) || '').localeCompare((b[key] as string) || '')
+              }))
               : [])
           ]}
           dataSource={dataTableDisplay}
@@ -209,31 +364,55 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
         try {
           const data = JSON.parse(selectedRowContent);
           if (data.text && data.count && data.color &&
-              Array.isArray(data.text) && Array.isArray(data.count) && Array.isArray(data.color)) {
+            Array.isArray(data.text) && Array.isArray(data.count) && Array.isArray(data.color)) {
             const startIndex = (currentPage - 1) * pageSize;
             const endIndex = startIndex + pageSize;
 
             return (
               <div>
-                <p style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-                  {data.text.slice(startIndex, endIndex).map((text: string, index: number) => (
-                    <Tooltip title={data.title[startIndex + index]} mouseEnterDelay={0.5}>
-                      <Badge
-                        key={startIndex + index}
-                        count={data.count[startIndex + index]}
-                        text={text}
-                        overflowCount={1e99}
-                        showZero
-                        color={data.color[startIndex + index]}
-                      />
-                    </Tooltip>
-                  ))}
-                </p>
                 <Pagination
                   current={currentPage}
                   onChange={(page) => setCurrentPage(page)}
+                  onShowSizeChange={(current, size) => {
+                    setPageSize(size);
+                    setCurrentPage(1);
+                  }}
                   total={data.text.length}
                   pageSize={pageSize}
+                  showSizeChanger
+                  pageSizeOptions={[100, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000, 5000, 10000, 20000, 50000, 999999999]}
+                  style={{ marginTop: '8px' }}
+                />
+
+                <div style={{ marginBottom: '16px' }}>
+                  <Checkbox
+                    checked={showRichText}
+                    onChange={e => setShowRichText(e.target.checked)}
+                    style={{ marginRight: '16px' }}
+                  >
+                    Rich Text Display
+                  </Checkbox>
+                  <Checkbox
+                    checked={showPureText}
+                    onChange={e => setShowPureText(e.target.checked)}
+                  >
+                    Pure Text Display
+                  </Checkbox>
+                </div>
+                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", flexDirection: "column" }}>
+                  {processContent(data, startIndex, endIndex)}
+                </div>
+                <Pagination
+                  current={currentPage}
+                  onChange={(page) => setCurrentPage(page)}
+                  onShowSizeChange={(current, size) => {
+                    setPageSize(size);
+                    setCurrentPage(1);
+                  }}
+                  total={data.text.length}
+                  pageSize={pageSize}
+                  showSizeChanger
+                  pageSizeOptions={[100, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000, 5000, 10000, 20000, 50000, 999999999]}
                   style={{ marginTop: '8px' }}
                 />
               </div>
@@ -244,18 +423,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
         }
 
         return (
-          <pre
-            style={{
-              margin: '0 0 16px 0',
-              whiteSpace: 'pre-wrap',
-              overflowX: 'auto',
-              backgroundColor: '#f5f5f5',
-              padding: '12px',
-              borderRadius: '4px',
-              border: '1px solid #e8e8e8',
-              fontFamily: 'monospace',
-              fontSize: `${fontSize}px`
-            }}>
+          <pre style={fallbackPreStyle}>
             {selectedRowContent}
           </pre>
         );

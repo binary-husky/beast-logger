@@ -11,7 +11,7 @@ from rich.text import Text
 from functools import partial
 from best_logger.register import register_logger, LoggerConfig
 from best_logger.print_basic import print_dict, print_dictofdict, rich2text, _log_final_exe, _log_final_exe_nested
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Dict, Any, Union
 
 class SeqItem(BaseModel):
@@ -24,12 +24,12 @@ class SeqItem(BaseModel):
     """
     text: List[str] = Field([], description="List of text items")
     title: List[str] = Field([], description="List of title items")
-    count: List[str] = Field([], description="List of counts corresponding to the text items")
+    count: List[Union[str, int]] = Field([], description="List of counts corresponding to the text items")
     color: List[str] = Field([], description="List of colors corresponding to the text items")
 
 class NestedJsonItem(BaseModel):
-    item_id: str = Field("", description="Unique identifier for the data item")
     content: Union[SeqItem, List[str]] = Field({}, description="Content of the data item, can be nested")
+    model_config = ConfigDict(extra="allow")
 
 def print_nested(
         nested_items: Dict[str, NestedJsonItem],

@@ -84,6 +84,7 @@ nested_items = {}
 for i in range(5):
     nested_item_ = NestedJsonItem(
         item_id=f"item-{i}",
+        reward=0,
         content=SeqItem(
             text=[f"text-1", f"text-2", f"text-3"],
             title=[f"hover", f"mouse", f"to see"],

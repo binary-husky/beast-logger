@@ -157,7 +157,7 @@ print_dict({
     ```
 
 
-<!-- 
+<!--
 # Upload to PyPI
 
 rm -rf build
@@ -166,5 +166,6 @@ python setup.py sdist bdist_wheel
 twine upload dist/*
 
 pip install ssh://root@22.5.102.82/mnt/data_cpfs/fuqingxu/code_dev/BeyondAgent/third_party/best-logger/dist/beast_logger-0.0.12-py3-none-any.whl
+pip install /mnt/data_cpfs/fuqingxu/code_dev/best-logger/dist/beast_logger-0.0.14-py3-none-any.whl
 
 -->

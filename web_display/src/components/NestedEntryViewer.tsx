@@ -127,7 +127,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
       <>
         {/* begin rich text display */}
         {showRichText && (
-          <p key={`paragraph-${paragraphCount}`} style={isBigBreak ? paragraphStyle:smallParagraphStyle }>
+          <p key={`paragraph-${paragraphCount}`} style={isBigBreak ? paragraphStyle : smallParagraphStyle}>
             {currentParagraph}
           </p>
         )}
@@ -159,27 +159,42 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
     let currentParagraph: React.ReactElement[] = [];
     let currentText: string[] = [];
     let paragraphCount = 0;
+    let drag_flag = false;  // 当遇到 <|im_end|> 但后面有 \n 时，转变为 true，延迟paragraph的创建
 
     data.text.slice(startIndex, endIndex).forEach((text: string, index: number) => {
       const globalIndex = startIndex + index;
       const badge = createBadgeElement(text, globalIndex, data);
 
-      if (text === '<|im_end|>' || text.includes('\n\n')) {
-        if (currentParagraph.length > 0) {
-          currentParagraph.push(badge);
-          currentText.push(text);
+      if (drag_flag || text === '<|im_end|>' || text.includes('\n\n')) {
 
-          elements.push(createParagraphElement(
-            currentParagraph,
-            currentText,
-            paragraphCount,
-            showRichText,
-            text === '<|im_end|>' ? showPureText : false
-          ));
+        // if next text is still \n\n or <|im_end|>, wait until next text to create paragraph
+        if (text === '<|im_end|>') {
+          const nextText = data.text[startIndex + index + 1];
+          if (nextText && nextText.includes('\n')) {
+            currentParagraph.push(badge);
+            currentText.push(text);
+            drag_flag = true;
+            return;
+          }
+        }
 
-          currentParagraph = [];
-          currentText = text === '<|im_end|>' ? [] : currentText;
-          paragraphCount++;
+        const shouldCreateBigParagraph = (text === '<|im_end|>' || drag_flag)
+        currentParagraph.push(badge);
+        currentText.push(text);
+
+        elements.push(createParagraphElement(
+          currentParagraph,
+          currentText,
+          paragraphCount,
+          showRichText,
+          shouldCreateBigParagraph ? showPureText : false
+        ));
+
+        currentParagraph = [];
+        currentText = shouldCreateBigParagraph ? [] : currentText;
+        paragraphCount++;
+        if (drag_flag) {
+          drag_flag = false;
         }
       } else {
         currentParagraph.push(badge);

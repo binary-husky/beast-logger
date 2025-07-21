@@ -79,3 +79,20 @@ print_listofdict(
 # │ │ 1         │ 4        │ 5        │ 6        │ │
 # │ └───────────┴──────────┴──────────┴──────────┘ │
 # ╰────────────────────────────────────────────────╯
+
+nested_items = {}
+for i in range(5):
+    nested_item_ = NestedJsonItem(
+        item_id=f"item-{i}",
+        content=SeqItem(
+            text=[f"text-1", f"text-2", f"text-3"],
+            title=[f"hover", f"mouse", f"to see"],
+            count=["1", "2", "3"],
+            color=["red", "green", "blue"]
+        )
+    )
+    nested_items[f"item.{i}"] = nested_item_
+
+
+print_nested(nested_items, main_content="This is the main content of the nested JSON",
+             header="Nested JSON Example", mod="abc", narrow=True, attach="copy this message to clipboard")

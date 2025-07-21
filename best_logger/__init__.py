@@ -3,3 +3,4 @@ import best_logger.apply_monkey_patch
 from best_logger.print_basic import *
 from best_logger.print_tensor import *
 from best_logger.register import register_logger, change_base_log_path
+from best_logger.print_nested import print_nested, SeqItem, NestedJsonItem

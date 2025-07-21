@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Badge, Button, Checkbox, Col, Row, Table, Pagination } from 'antd';
+import { Badge, Button, Checkbox, Col, Row, Table, Pagination, Tooltip } from 'antd';
 import type { TableColumnsType } from 'antd';
 import type { GetProp } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
@@ -217,15 +217,16 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
               <div>
                 <p style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
                   {data.text.slice(startIndex, endIndex).map((text: string, index: number) => (
-                    <Badge
-                      key={startIndex + index}
-                      count={data.count[startIndex + index]}
-                      text={text}
-                      title="tt2"
-                      overflowCount={1e99}
-                      showZero
-                      color={data.color[startIndex + index]}
-                    />
+                    <Tooltip title={data.title[startIndex + index]} mouseEnterDelay={0.5}>
+                      <Badge
+                        key={startIndex + index}
+                        count={data.count[startIndex + index]}
+                        text={text}
+                        overflowCount={1e99}
+                        showZero
+                        color={data.color[startIndex + index]}
+                      />
+                    </Tooltip>
                   ))}
                 </p>
                 <Pagination

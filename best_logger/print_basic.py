@@ -89,6 +89,32 @@ def _log_final_exe(mod=None, buf="", color=None, header=None, attach=None):
         logger.opt(depth=2).info(buf)
     return buf
 
+def _log_final_exe_nested(nested_json, mod=None, buf="", color=None, header=None, attach=None):
+    if mod in ('console', 'c'):
+        print(buf)
+        return
+    if LoggerConfig.handler_cnt > 0 and LoggerConfig.handler_cnt != len(logger._core.handlers):
+        print("\n******************************\nWarning! Somewhere or someone has changed the logger handlers, restoring configuration...\n******************************\n")
+        register_logger(**LoggerConfig.register_kwargs)
+    if header is not None or color is not None:
+        assert mod is not None
+    if mod:
+        logger.bind(**{mod: True}).opt(depth=2).info(buf)
+        if mod+"_json" in LoggerConfig.registered_mods:
+            logger.bind(**{mod+"_json": True}).opt(depth=2).info("\n" + json.dumps({
+                "header": header,
+                "color": color,
+                "content": buf,
+                "attach": attach,
+                "nested": True,
+                "nested_json": nested_json
+            }, ensure_ascii=False))
+            if LoggerConfig.register_kwargs["debug"] == True:
+                if len(buf) > 10000: time.sleep(1)
+                else: time.sleep(0.1)
+    else:
+        logger.opt(depth=2).info(buf)
+    return buf
 
 def print_dict(d: dict, header: str = "", mod: str = "", narrow: bool = False, attach=None) -> None:
     """

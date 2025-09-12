@@ -52,5 +52,5 @@ def print_nested(
     """
     nested_items = {k: v.model_dump() for k, v in nested_items.items()}
     color = "#337711"
-    _log_final_exe_nested(nested_items, mod=mod, buf=main_content, color=color, header=header, attach=attach)
+    _log_final_exe_nested(nested_items, mod=mod, buf=main_content, color=color, header=header, attach=attach, compress=True)
     return

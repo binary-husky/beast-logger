@@ -66,7 +66,7 @@ def uninstall_lock_file():
 
 atexit.register(uninstall_lock_file)
 
-def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_clean_mods=[], debug=False):
+def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_clean_mods=[], debug=False, rotation="100 MB"):
     """ mods: 需要注册的模块名列表，同时向终端和文件输出
         non_console_mods: 需要注册的模块名列表，只向文件输出
         base_log_path: 日志文件存放的根目录
@@ -129,7 +129,7 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
         time.sleep(2)
 
     regular_log_path = os.path.join(base_log_path, "regular", "regular.log")
-    logger.add(regular_log_path, rotation="50 MB", enqueue=True, filter=is_not_non_console_mod)
+    logger.add(regular_log_path, rotation=rotation, enqueue=True, filter=is_not_non_console_mod)
     for mod in (mods + non_console_mods):
         def debug(record, mod):
             return record["extra"].get(mod) == True
@@ -141,10 +141,10 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
                 shutil.rmtree(os.path.join(base_log_path, mod))
         # 添加一个普通日志
         log_path = os.path.join(base_log_path, mod, f"{mod}.log")
-        logger.add(log_path, rotation="50 MB", enqueue=True, filter=partial(debug, mod=mod))
+        logger.add(log_path, rotation=rotation, enqueue=True, filter=partial(debug, mod=mod))
         # 添加一个json日志
         json_log_path = os.path.join(base_log_path, mod, f"{mod}.json.log")
-        logger.add(json_log_path, rotation="50 MB", enqueue=True, filter=partial(debug, mod=mod+"_json"))
+        logger.add(json_log_path, rotation=rotation, enqueue=True, filter=partial(debug, mod=mod+"_json"))
         LoggerConfig.registered_mods += [mod]
         LoggerConfig.registered_mods += [mod+"_json"]
     LoggerConfig.handler_cnt = len(logger._core.handlers)

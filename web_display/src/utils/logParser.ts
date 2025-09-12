@@ -1,4 +1,5 @@
 import { LogEntry, LogMetadata } from '../types';
+import pako from 'pako';
 
 /**
  * Sort log entries by timestamp
@@ -14,6 +15,26 @@ export function sortLogEntries(entries: LogEntry[], ascending: boolean = true): 
   });
 }
 
+
+
+// Function to decompress gzipped base64 content
+const decompressContent = (compressedContent: string): string => {
+  try {
+    // Convert base64 to binary array using browser APIs
+    const binaryString = atob(compressedContent);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const decompressed = pako.inflate(bytes, { to: 'string' });
+    return decompressed;
+  } catch (error) {
+    console.error('Error decompressing content:', error);
+    return '';
+  }
+};
+
 /**
  * Parse a single log line into its components
  * parse log title such as
@@ -27,6 +48,7 @@ function parseLogLine(line: string): Partial<LogEntry> | null {
   const logLevelPattern = /\|\s*(INFO|DEBUG|WARN|ERROR|CRITICAL)\s*\|/;
   if (!logLevelPattern.test(line)) return null;
   if (line.trim().startsWith('{')) return null;
+  if (line.trim().startsWith('base64:')) return null;
 
   const [timestamp, level, module, lineNum, ...messageParts] = line.split('|').map(part => part.trim());
 
@@ -114,7 +136,13 @@ export function parseLogContent(content: string): LogEntry[] {
       currentEntry = parsedLine;
       currentContent = [line];
     } else if (currentEntry && line.trim()) {
-      currentContent.push(line);
+      if (line.startsWith('base64:')) {
+        var linex = line.replace('base64:', ''); // remove base64 prefix if exists
+        linex = decompressContent(linex);
+        currentContent.push(linex);
+      } else {
+        currentContent.push(line);
+      }
     }
   }
 

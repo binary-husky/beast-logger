@@ -48,12 +48,12 @@ const broadcast = (message: any) => {
 // Recursive function to scan for log files
 function scanLogFiles(dir: string): Array<{name: string, path: string, size: number, lastModified: Date}> {
   const files: Array<{name: string, path: string, size: number, lastModified: Date}> = [];
-  
+
   const entries = fs.readdirSync(dir, { withFileTypes: true });
-  
+
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
-    
+
     if (entry.isDirectory()) {
       files.push(...scanLogFiles(fullPath));
     } else if (entry.isFile() && (entry.name.includes('.json.') && entry.name.endsWith('.log'))) {
@@ -66,15 +66,17 @@ function scanLogFiles(dir: string): Array<{name: string, path: string, size: num
       });
     }
   }
-  
+
   return files;
 }
+
+
 
 app.get('/api/logs/files', (req, res) => {
   try {
     const dirPath = req.query.path as string;
     const logsDir = dirPath ? path.normalize(dirPath) : path.join(__dirname, '../../logs');
-    
+
     // Validate directory path
     if (dirPath && !fs.existsSync(logsDir)) {
       return res.status(404).json({ error: 'Directory not found' });
@@ -105,26 +107,26 @@ app.get('/api/logs/content', (req, res) => {
     }
 
     const normalizedPath = path.normalize(filePath);
-    
+
     if (!fs.existsSync(normalizedPath)) {
       return res.status(404).json({ error: 'File not found' });
     }
 
     const content = fs.readFileSync(normalizedPath, 'utf-8');
     const lines = content.split('\n').filter(line => line.trim());
-    
+
     const entityTakeNumLines = 2;
     // Calculate total number of entries and pages
     const totalEntries = Math.floor(lines.length / entityTakeNumLines);
     const totalPages = Math.ceil(totalEntries / numEntitiesPerPage);
-    
+
     // Get the slice of entries for the requested page
     const startIndex = (page - 1) * numEntitiesPerPage * entityTakeNumLines;
     const endIndex = startIndex + numEntitiesPerPage * entityTakeNumLines;
     const pageContent = lines.slice(startIndex, endIndex).join('\n');
-    
-    // Compress the content using gzip
-    const compressedContent = zlib.gzipSync(Buffer.from(pageContent)).toString('base64');
+
+    // Compress the content using gzip with maximum compression level
+    const compressedContent = zlib.gzipSync(Buffer.from(pageContent), { level: 9 }).toString('base64');
 
     res.json({
       content: compressedContent,

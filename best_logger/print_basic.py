@@ -9,6 +9,7 @@ from rich.table import Table
 from rich.text import Text
 from functools import partial
 from best_logger.register import register_logger, LoggerConfig
+import zlib, base64
 
 def formatter_with_clip(record: dict) -> str:
     """
@@ -89,7 +90,7 @@ def _log_final_exe(mod=None, buf="", color=None, header=None, attach=None):
         logger.opt(depth=2).info(buf)
     return buf
 
-def _log_final_exe_nested(nested_json, mod=None, buf="", color=None, header=None, attach=None):
+def _log_final_exe_nested(nested_json, mod=None, buf="", color=None, header=None, attach=None, compress=False):
     if mod in ('console', 'c'):
         print(buf)
         return
@@ -101,14 +102,23 @@ def _log_final_exe_nested(nested_json, mod=None, buf="", color=None, header=None
     if mod:
         logger.bind(**{mod: True}).opt(depth=2).info(buf)
         if mod+"_json" in LoggerConfig.registered_mods:
-            logger.bind(**{mod+"_json": True}).opt(depth=2).info("\n" + json.dumps({
+            final_content_dict = {
                 "header": header,
                 "color": color,
                 "content": buf,
                 "attach": attach,
                 "nested": True,
                 "nested_json": nested_json
-            }, ensure_ascii=False))
+            }
+            final_content_json = json.dumps(final_content_dict, ensure_ascii=False)
+            if compress:
+                compressed_bytes = zlib.compress(final_content_json.encode('utf-8'))
+                compressed_b64 = base64.b64encode(compressed_bytes).decode('ascii')
+                final_str = "\nbase64:" + compressed_b64
+            else:
+                final_str = "\n" + final_content_json
+
+            logger.bind(**{mod+"_json": True}).opt(depth=2).info(final_str)
             if LoggerConfig.register_kwargs["debug"] == True:
                 if len(buf) > 10000: time.sleep(1)
                 else: time.sleep(0.1)

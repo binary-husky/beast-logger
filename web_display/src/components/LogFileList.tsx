@@ -1,19 +1,40 @@
 import React from 'react';
-import { List } from 'antd';
+import { List, Button } from 'antd';
+import { HomeOutlined } from '@ant-design/icons';
 import { LogFile } from '../types';
 
 interface LogFileListProps {
   files: LogFile[];
   selectedFile?: LogFile;
   onFileSelect: (file: LogFile) => void;
+  onGoHome?: () => void;
 }
 
-const LogFileList: React.FC<LogFileListProps> = ({ files, selectedFile, onFileSelect }) => {
+const LogFileList: React.FC<LogFileListProps> = ({ files, selectedFile, onFileSelect, onGoHome }) => {
+  const handleGoHome = () => {
+    if (onGoHome) {
+      onGoHome();
+    } else {
+      window.location.href = '/';
+    }
+  };
+
   return (
-    <List
-      dataSource={files}
-      style={{ height: '100vh', overflowY: 'auto' }}
-      renderItem={(file) => (
+    <div>
+      <div style={{ padding: '16px 24px', borderBottom: '1px solid #f0f0f0' }}>
+        <Button
+          type="primary"
+          icon={<HomeOutlined />}
+          onClick={handleGoHome}
+          style={{ width: '100%' }}
+        >
+          Home
+        </Button>
+      </div>
+      <List
+        dataSource={files}
+        style={{ height: 'calc(100vh - 80px)', overflowY: 'auto' }}
+        renderItem={(file) => (
         <List.Item
           onClick={() => onFileSelect(file)}
           style={{
@@ -34,6 +55,7 @@ const LogFileList: React.FC<LogFileListProps> = ({ files, selectedFile, onFileSe
         </List.Item>
       )}
     />
+    </div>
   );
 };
 

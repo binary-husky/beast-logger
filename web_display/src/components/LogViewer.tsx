@@ -133,19 +133,12 @@ const LogViewer: React.FC<LogViewerProps> = ({
                 {ascending ? 'Oldest First' : 'Newest First'}
               </Button>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <h3 style={{ margin: 0 }}>Log Details</h3>
                 <div>
                   <Button onClick={() => setFontSize(prev => Math.max(8, prev - 2))} style={{ marginRight: '8px' }}>A-</Button>
                   <Button onClick={() => setFontSize(prev => Math.min(24, prev + 2))}>A+</Button>
                 </div>
               </div>
-              <Pagination
-                current={currentPage}
-                total={totalEntries || entries.length}
-                pageSize={PAGE_SIZE}
-                onChange={handlePageChange}
-                showSizeChanger={false}
-              />
+
             </div>
 
 
@@ -163,15 +156,28 @@ const LogViewer: React.FC<LogViewerProps> = ({
                     margin: '4px 0'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: entry.color || getLevelColor(entry.level), fontWeight: 'bold' }}>[{entry.level}]</span>
-                    <span style={{ color: entry.color || getLevelColor(entry.level), fontWeight: 'bold' }}>{entry.header || entry.message}</span>
-                    <span>-</span>
-                    <span>{entry.timestamp}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ color: entry.color || getLevelColor(entry.level), fontWeight: 'bold' }}>[{entry.level}]</span>
+                      <span style={{ color: entry.color || getLevelColor(entry.level), fontWeight: 'bold' }}>{entry.header || entry.message}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span>{entry.timestamp}</span>
+                    </div>
                   </div>
+
                 </List.Item>
               )}
             />
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+              <Pagination
+                current={currentPage}
+                total={totalEntries || entries.length}
+                pageSize={PAGE_SIZE}
+                onChange={handlePageChange}
+                showSizeChanger={false}
+              />
+            </div>
           </>
         )}
       </div>

@@ -46,8 +46,11 @@ const broadcast = (message: any) => {
 
 // API Routes
 // Recursive function to scan for log files
-function scanLogFiles(dir: string): Array<{name: string, path: string, size: number, lastModified: Date}> {
+function scanLogFiles(dir: string, afterDatatime?: string): Array<{name: string, path: string, size: number, lastModified: Date}> {
   const files: Array<{name: string, path: string, size: number, lastModified: Date}> = [];
+
+  // Parse the afterDatatime if provided
+  const afterDate = afterDatatime ? new Date(afterDatatime) : null;
 
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
@@ -55,9 +58,23 @@ function scanLogFiles(dir: string): Array<{name: string, path: string, size: num
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
-      files.push(...scanLogFiles(fullPath));
+      // Check directory's modification time for efficiency
+      if (afterDate) {
+        const dirStats = fs.statSync(fullPath);
+        // Skip directory if it hasn't been modified after the specified time
+        if (dirStats.mtime <= afterDate) {
+          continue;
+        }
+      }
+      files.push(...scanLogFiles(fullPath, afterDatatime));
     } else if (entry.isFile() && (entry.name.includes('.json.') && entry.name.endsWith('.log'))) {
       const stats = fs.statSync(fullPath);
+
+      // Filter files based on afterDatatime if provided
+      if (afterDate && stats.mtime <= afterDate) {
+        continue; // Skip files that are not newer than the specified time
+      }
+
       files.push({
         name: entry.name,
         path: fullPath,
@@ -75,6 +92,7 @@ function scanLogFiles(dir: string): Array<{name: string, path: string, size: num
 app.get('/api/logs/files', (req, res) => {
   try {
     const dirPath = req.query.path as string;
+    const afterDatatime = req.query.after_datatime as string;
     const logsDir = dirPath ? path.normalize(dirPath) : path.join(__dirname, '../../logs');
 
     // Validate directory path
@@ -87,7 +105,7 @@ app.get('/api/logs/files', (req, res) => {
       fs.mkdirSync(logsDir, { recursive: true });
     }
     console.log(logsDir)
-    const files = scanLogFiles(logsDir);
+    const files = scanLogFiles(logsDir, afterDatatime);
     // sort by last modified date (newest first)
     files.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
     res.json(files);
@@ -96,6 +114,7 @@ app.get('/api/logs/files', (req, res) => {
     res.status(500).json({ error: 'Failed to read log files' });
   }
 });
+
 
 app.get('/api/logs/content', (req, res) => {
   try {

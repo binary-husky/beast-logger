@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { List, Button, Pagination, Spin, message } from 'antd';
 import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { LogEntry } from '../types';
@@ -80,6 +80,21 @@ const LogViewer: React.FC<LogViewerProps> = ({
         return '#8c8c8c';
       default:
         return '#000000';
+    }
+  };
+
+  // Ref for the right log display area
+  const logDisplayRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top/bottom handlers
+  const scrollToTop = () => {
+    if (logDisplayRef.current) {
+      logDisplayRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  const scrollToBottom = () => {
+    if (logDisplayRef.current) {
+      logDisplayRef.current.scrollTo({ top: logDisplayRef.current.scrollHeight, behavior: 'smooth' });
     }
   };
 
@@ -183,14 +198,69 @@ const LogViewer: React.FC<LogViewerProps> = ({
       </div>
 
       {/* 这个div是Entry的显示器 */}
-      <div style={{
-        flex: '1',
-        minWidth: '200px',
-        padding: '5px',
-        height: '100%',
-        overflowY: 'auto',
-        backgroundColor: '#fafafa'
-      }}>
+      <div
+        ref={logDisplayRef}
+        style={{
+          flex: '1',
+          minWidth: '200px',
+          padding: '5px',
+          height: '100%',
+          overflowY: 'auto',
+          backgroundColor: '#fafafa',
+          position: 'relative',
+        }}
+      >
+        {/* Floating go top/bottom buttons */}
+        <div style={{
+          position: 'fixed',
+          right: '40px',
+          bottom: '120px',
+          zIndex: 2000,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+        }}>
+          <button
+            onClick={scrollToTop}
+            style={{
+              background: 'rgba(255,255,255,0.9)',
+              border: '1px solid #ccc',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              fontSize: '22px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.2s',
+            }}
+            title="Go Top"
+          >
+            <span style={{ display: 'inline-block', transform: 'translateY(-2px)' }}>▲</span>
+          </button>
+          <button
+            onClick={scrollToBottom}
+            style={{
+              background: 'rgba(255,255,255,0.9)',
+              border: '1px solid #ccc',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              fontSize: '22px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.2s',
+            }}
+            title="Go Bottom"
+          >
+            <span style={{ display: 'inline-block', transform: 'translateY(2px)' }}>▼</span>
+          </button>
+        </div>
         {selectedEntry ? (
           selectedEntry.nested ? (
             <NestedEntryViewer

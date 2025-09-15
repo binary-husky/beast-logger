@@ -43,7 +43,7 @@ const SimpleBadge: React.FC<SimpleBadgeProps> = ({ text, count, color, title }) 
       {/* text below */}
       <div
         style={{
-          fontSize: '12px',
+          fontSize: '14px',
           color: '#000000ff',
           marginTop: '1px',
           lineHeight: '1',

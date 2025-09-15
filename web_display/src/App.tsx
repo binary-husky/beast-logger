@@ -19,8 +19,54 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPathInput, setShowPathInput] = useState(false);
   const [pathInput, setPathInput] = useState('');
+  const [incrementalFiles, setIncrementalFiles] = useState<LogFile[]>([]);
 
   const PAGE_SIZE = 15;
+
+  // Function to save last open directory and time
+  const save_last_open_dir_and_last_open_time = (path: string) => {
+    localStorage.setItem('logDirectoryPath', path);
+    localStorage.setItem('lastOpenTime', new Date().toISOString());
+  };
+
+  // Function to scan for incremental log files
+  const scanIncrementalLogFiles = async () => {
+    const lastPath = localStorage.getItem('logDirectoryPath');
+    const lastOpenTime = localStorage.getItem('lastOpenTime');
+
+    if (!lastPath || !lastOpenTime) {
+      return;
+    }
+
+    try {
+      // Get parent directory path
+      const parentPath = lastPath.replace(/\/[^\/]*$/, '');
+
+      const debugFileServer = process.env.REACT_APP_DEBUG_FILE_SERVER;
+      const baseUrl = debugFileServer || '';
+      const response = await fetch(
+        `${baseUrl}/api/logs/files?path=${encodeURIComponent(parentPath)}&after_datatime=${encodeURIComponent(lastOpenTime)}`
+      );
+
+      if (response.ok) {
+        const incrementalFilesData = await response.json();
+        if (Array.isArray(incrementalFilesData) && incrementalFilesData.length > 0) {
+          console.log('Found nearby log files:', incrementalFilesData);
+          // filter 10 latest modified files
+          const sortedFiles = incrementalFilesData
+            .filter(file => file.lastModified) // Only include files with lastModified timestamp
+            .sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime()) // Sort by newest first
+            .slice(0, 10); // Take only the first 10
+          setIncrementalFiles(sortedFiles);
+        } else {
+          setIncrementalFiles([]);
+        }
+      }
+    } catch (error) {
+      console.error('Error scanning incremental log files:', error);
+      setIncrementalFiles([]);
+    }
+  };
 
   // Function to decompress gzipped base64 content
   const decompressContent = (compressedContent: string): string => {
@@ -76,10 +122,21 @@ function App() {
         : `${baseUrl}/api/logs/files`;
       const response = await fetch(url);
       const data = await response.json();
+      // check data is array
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid data format: expected an array of log files');
+      }
       setFiles(data);
+
+      // Save path to localStorage
+      if (path) {
+        save_last_open_dir_and_last_open_time(path);
+      }
+
     } catch (error) {
       console.error('Error fetching log files:', error);
       setFiles([]);
+      alert('Error fetching log files. Please check the path and try again.');
     }
   }, []);
 
@@ -190,6 +247,9 @@ function App() {
         open={showPathInput}
         onCancel={() => setShowPathInput(false)}
         footer={[
+          <Button key="scan" onClick={scanIncrementalLogFiles}>
+            Scan Incremental
+          </Button>,
           <Button key="submit" type="primary" onClick={handlePathSubmit}>
             Submit
           </Button>,
@@ -206,6 +266,51 @@ function App() {
           onPressEnter={handlePathSubmit}
           autoFocus
         />
+        <div>
+          {/* put incremental files here */}
+          {incrementalFiles.length > 0 && (
+            <div style={{ marginTop: '16px' }}>
+              <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                Nearby Log Files:
+              </p>
+              <div style={{
+                maxHeight: '200px',
+                overflowY: 'auto',
+                border: '1px solid #d9d9d9',
+                borderRadius: '6px',
+                padding: '8px'
+              }}>
+                {incrementalFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      padding: '4px 8px',
+                      margin: '2px 0',
+                      backgroundColor: '#f5f5f5',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                    onClick={() => {
+                      // Set path to parent directory of the selected file
+                      const parentPath = file.path.replace(/\/[^\/]*$/, '');
+                      setPathInput(parentPath);
+                      setIncrementalFiles([]);
+                    }}
+                  >
+                    <div style={{ fontWeight: 'bold' }}>{file.name}</div>
+                    <div style={{ color: '#666' }}>{file.path}</div>
+                    {file.lastModified && (
+                      <div style={{ color: '#999', fontSize: '10px' }}>
+                        Modified: {new Date(file.lastModified).toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </Modal>
     </>
   );

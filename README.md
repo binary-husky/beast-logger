@@ -2,7 +2,7 @@
 
 Log data as tables, and then render them as entries in web log viewer with extremely simple functions !
 
-![Image](https://github.com/user-attachments/assets/c1a39a30-445f-4e7e-a632-cdab23c70c5f)
+![Image](doc/fig_tokens.png)
 
 ## Additional Features
 

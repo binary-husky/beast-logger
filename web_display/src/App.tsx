@@ -35,6 +35,7 @@ function App() {
     const lastOpenTime = localStorage.getItem('lastOpenTime');
 
     if (!lastPath || !lastOpenTime) {
+      alert('No previous directory found.');
       return;
     }
 

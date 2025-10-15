@@ -12,7 +12,7 @@ REACT_APP_FPORT=8181 npm run start
 
 - debug （在3000端口单独打开dev版的react，依赖file server）
 
-DANGEROUSLY_DISABLE_HOST_CHECK=true WATCHPACK_POLLING=true CHOKIDAR_USEPOLLING=true REACT_APP_DEBUG_FILE_SERVER='http://localhost:8181' npm run start:dev
+DANGEROUSLY_DISABLE_HOST_CHECK=true WATCHPACK_POLLING=true CHOKIDAR_USEPOLLING=true REACT_APP_DEBUG_FILE_SERVER='http://localhost:9999' npm run start:dev
 
 ##
 

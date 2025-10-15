@@ -161,11 +161,27 @@ print_dict({
 # Upload to PyPI
 
 rm -rf build
+rm -rf web_display_dist
 rm -rf dist
+rm -rf web_display/build
+rm -rf web_display/dist
+rm -rf beast_logger.egg-info
+rm -rf best_logger.egg-info
+
+cd web_display
+nvm install 16
+nvm use 16
+npm install
+npm run build:all
+cd ..
+
+mkdir web_display_dist
+mv web_display/build web_display_dist/build_pub
+
 python setup.py sdist bdist_wheel
 twine upload dist/*
 
 pip install ssh://root@22.5.102.82/mnt/data_cpfs/fuqingxu/code_dev/BeyondAgent/third_party/best-logger/dist/beast_logger-0.0.12-py3-none-any.whl
-pip install /mnt/data_cpfs/fuqingxu/code_dev/best-logger/dist/beast_logger-0.0.16-py3-none-any.whl
+pip install /mnt/data_cpfs/fuqingxu/code_dev/BeyondAgent/third_party/best-logger/dist/beast_logger-0.0.17-py3-none-any.whl
 
 -->

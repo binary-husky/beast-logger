@@ -3,7 +3,7 @@ import re
 import os
 
 def get_version():
-    version_match = "0.0.16"
+    version_match = "0.0.17"
     return version_match
 
 version = get_version()
@@ -12,7 +12,7 @@ def package_files(directory, black_list):
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
-            if not any([k in filename or k in path for k in black_list]):
+            if not any([(k in filename or k in path) for k in black_list]):
                 paths.append(os.path.join('..', path, filename))
             else:
                 print('ignore', filename)
@@ -21,7 +21,10 @@ def package_files(directory, black_list):
 
 extra_files = package_files(
     'web_display',
-    black_list=['node_modules', 'logs', 'dist', 'build', '__pycache__']
+    black_list=['node_modules', 'logs', 'dist', 'build', '__pycache__', 'nvm']
+) + package_files(
+    'web_display_dist',
+    black_list=[]
 )
 
 with open("README.md", "r", encoding="utf-8") as f:
@@ -58,8 +61,8 @@ setup(
     install_requires=open("requirements.txt").read().splitlines(),
     entry_points={
         "console_scripts": [
-            "beast_logger_install=web_display.install:main",
-            "beast_logger_go=web_display.go:main",
+            "beast_logger_install=web_display.start_web:main",
+            "beast_logger_go=web_display.start_web:main",
         ],
     },
     project_urls={

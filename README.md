@@ -56,7 +56,7 @@ pip install dist/dist/beast_logger-{VERSION}-py3-none-any.whl
 
 </details>
 
-## Write Logs: A Basic Example
+## 〔Write Logs〕: A Basic Example
 
 - Import and configure logging
 
@@ -79,7 +79,7 @@ pip install dist/dist/beast_logger-{VERSION}-py3-none-any.whl
     # ╰────────────────────────────────────────────────╯
     ```
 
-## Read Logs: The Usage of the Web Log Viewer
+## 〔Read Logs〕: The Usage of the Web Log Viewer
 
 Browse your logs in a local web app and copy structured entries with one click.
 
@@ -92,7 +92,9 @@ Browse your logs in a local web app and copy structured entries with one click.
 </div>
 
 
-## API Overview
+## 〔API Overview〕
+
+### Simple logging methods
 
 1. `print_list(list_like, ...)`
     Log a Python list as a table.
@@ -174,7 +176,7 @@ Browse your logs in a local web app and copy structured entries with one click.
 
 Note: Requires torch installed if you use these functions.
 
-## Token Logger
+### Token Logger Method
 
 <div align="center">
     <img width="500" alt="image" align="center"  src="https://github.com/user-attachments/assets/26dcf109-236c-4b41-95bd-98d9b68434dc" />

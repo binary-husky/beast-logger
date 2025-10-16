@@ -1,175 +1,43 @@
-# Core features
+# Beast Logger
 
-Log data as tables, and then render them as entries in web log viewer with extremely simple functions !
+**Beast Logger** is a simple but advanced logging module for Python data structures and tensors. It is built for, but not limited to, tracing the progress of all kind of Machine Learning (ML) algorithms, such as SFT, RLHF and GRPO.
 
-![Image](doc/fig_tokens.png)
+**Beast Logger** renders all kinds of data (lists, dictionaries, list of dictionaries, dictionary of dictionaries, llm token array, etc) as rich, compact widgets in your terminal and web-based log interfaces. Additionally, it enables users to extract customizable text from each log entry, thereby enhancing reproducibility and simplifying debugging processes.
 
-## Additional Features
+**Beast Logger** is optimized for English, Chinese and many other languages for best reading experience.
 
-### `best_logger.print_basic`
-- Format and log lists, dictionaries, nested dictionaries, and other structures using richly styled tables.
-- Functions:
-  - `print_list`: Log lists in a structured table format.
-  - `print_dict`: Log flat dictionaries with keys and values.
-  - `print_listofdict`: Log a list of dictionaries as rows in a table.
-  - `print_dictofdict`: Log nested dictionaries as a table.
-  - `sprintf_nested_structure`: View nested structures hierarchically in plain text.
+## Demo
+<div align="center">
+    <img width="500" alt="image" align="center"  src="doc/fig_tokens.png" />
+</div>
 
-### `best_logger.print_tensor`
-- Specialized features for PyTorch tensors:
-  - `print_tensor`: Log tensor attributes (shape, dtype, device) with a preview.
-  - `print_tensor_dict`: Log a dictionary of tensors with detailed attributes (handles exceptions gracefully).
-- Automatically limits preview content for long tensors.
+## Installation
 
-```python
-from best_logger import *
+Just run `pip install beast-logger` to install both beast-logger and its web viewer.
 
-# === log nested dictionaries as table ===
-print_dictofdict({
-    'sample-1':{
-        "a": 1,
-        "b": 2,
-        "c": 3,
-    },
-    'sample-2':{
-        "a": 4,
-        "b": 5,
-        "c": 6,
-    }
-}, narrow=True, header="this is a header", mod="", attach="create a copy button in web log viewer, when clicked, copy this message into clipboard")
+<details>
+<summary>1. Install from PyPI</summary>
 
-# ╭─────────────── this is a header ───────────────╮
-# │ ┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━━━┓ │
-# │ ┃                      ┃ a     ┃ b    ┃ c    ┃ │
-# │ ┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━╇━━━━━━┩ │
-# │ │ sample-1             │ 1     │ 2    │ 3    │ │
-# │ ├──────────────────────┼───────┼──────┼──────┤ │
-# │ │ sample-2             │ 4     │ 5    │ 6    │ │
-# │ └──────────────────────┴───────┴──────┴──────┘ │
-# ╰────────────────────────────────────────────────╯
+```bash
+pip install beast-logger -i https://pypi.org/simple
 ```
+</details>
+<details>
+<summary>2. Install from Aliyun PyPI Mirror</summary>
 
-![Image](https://github.com/user-attachments/assets/92d1a14b-3c64-4c61-8be8-9ea4bbff2422)
-
-
-
-```python
-
-# === log a list of dictionaries as table ===
-print_listofdict(
-    [{
-        "a": 1,
-        "b": 2,
-        "c": 3,
-    },
-    {
-        "a": 4,
-        "b": 5,
-        "c": 6,
-    }], narrow=True)
-
-# ╭────────────────────────────────────────────────╮
-# │ ┏━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓ │
-# │ ┃           ┃ a        ┃ b        ┃ c        ┃ │
-# │ ┡━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩ │
-# │ │ 0         │ 1        │ 2        │ 3        │ │
-# │ ├───────────┼──────────┼──────────┼──────────┤ │
-# │ │ 1         │ 4        │ 5        │ 6        │ │
-# │ └───────────┴──────────┴──────────┴──────────┘ │
-# ╰────────────────────────────────────────────────╯
+```bash
+pip install beast-logger -i https://mirrors.aliyun.com/pypi/simple/
 ```
+</details>
+<details>
+<summary>3. Install from source (click to expand)</summary>
 
+```bash
+rm -rf build dist web_display_dist
+rm -rf web_display/build web_display/dist
+rm -rf beast_logger.egg-info best_logger.egg-info
 
-```python
-
-# === log dictionary as table ===
-print_dict({
-    "a": 1,
-    "b": 2,
-    "c": 3,
-}, mod="abc")
-
-# ╭────────────────────────────────────────────────╮
-# │ ┌──────────────────────┬─────────────────────┐ │
-# │ │ a                    │ 1                   │ │
-# │ ├──────────────────────┼─────────────────────┤ │
-# │ │ b                    │ 2                   │ │
-# │ ├──────────────────────┼─────────────────────┤ │
-# │ │ c                    │ 3                   │ │
-# │ └──────────────────────┴─────────────────────┘ │
-# ╰────────────────────────────────────────────────╯
-
-```
-
-# Quick Start
-
-- install: `pip install beast-logger -i https://pypi.org/simple`
-
-- import
-    ```python
-    from best_logger import *
-    ```
-- register file handler
-    ```python
-    def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_clean_mods=[]):
-        """ mods: 需要注册的模块名列表，同时向终端和文件输出
-            non_console_mods: 需要注册的模块名列表，只向文件输出
-            base_log_path: 日志文件存放的根目录
-            auto_clean_mods: 需要自动删除旧日志的模块名列表
-    """
-    ```
-- begin logging
-    ```python
-    from best_logger import *
-    register_logger(mods=["abc"])
-    print_dict({
-        "a": 1,
-        "b": 2,
-        "c": 3,
-    }, mod="abc")
-    ```
-
-- install nvm
-
-    `wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash`
-
-- launch web display on port 8181 (first time)
-
-    `python -m web_display.install 8181` or simply `beast_logger_install`
-
-- launch web display on port 8181 (skip npm install)
-
-    `python -m web_display.go 8181` or simply `beast_logger_go`
-
-- open in browser
-
-    `http://localhost:8181`
-
-![Image](https://github.com/user-attachments/assets/5fa151d9-26e2-48ef-9565-ced714eb1617)
-
-- test program and enter log dir (absolute path) into web log viewer.
-    ```python
-    from best_logger import *
-    register_logger(mods=["abc"])
-    print_dict({
-        "a": 1,
-        "b": 2,
-        "c": 3,
-    }, mod="abc")
-    ```
-
-
-<!--
-# Upload to PyPI
-
-rm -rf build
-rm -rf web_display_dist
-rm -rf dist
-rm -rf web_display/build
-rm -rf web_display/dist
-rm -rf beast_logger.egg-info
-rm -rf best_logger.egg-info
-
+# Build web assets
 cd web_display
 nvm install 16
 nvm use 16
@@ -177,13 +45,163 @@ npm install
 npm run build:all
 cd ..
 
-mkdir web_display_dist
+# Build wheel
+mkdir -p web_display_dist
 mv web_display/build web_display_dist/build_pub
-
 python setup.py sdist bdist_wheel
-twine upload dist/*
 
-pip install ssh://root@22.5.102.82/mnt/data_cpfs/fuqingxu/code_dev/BeyondAgent/third_party/best-logger/dist/beast_logger-0.0.12-py3-none-any.whl
-pip install /mnt/data_cpfs/fuqingxu/code_dev/BeyondAgent/third_party/best-logger/dist/beast_logger-0.0.17-py3-none-any.whl
+# Install wheel
+pip install dist/dist/beast_logger-{VERSION}-py3-none-any.whl
+```
 
+</details>
+
+## Write Logs: A Basic Example
+
+- Import and configure logging
+
+    ```python
+    from beast_logger import register_logger, print_dict
+    register_logger(mods=["demo"])
+    print_dict({
+        "a": 1,
+        "b": 2,
+        "c": 3,
+    }, mod="demo")
+    # ╭────────────────────────────────────────────────╮
+    # │ ┌──────────────────────┬─────────────────────┐ │
+    # │ │ a                    │ 1                   │ │
+    # │ ├──────────────────────┼─────────────────────┤ │
+    # │ │ b                    │ 2                   │ │
+    # │ ├──────────────────────┼─────────────────────┤ │
+    # │ │ c                    │ 3                   │ │
+    # │ └──────────────────────┴─────────────────────┘ │
+    # ╰────────────────────────────────────────────────╯
+    ```
+
+## Read Logs: The Usage of the Web Log Viewer
+
+Browse your logs in a local web app and copy structured entries with one click.
+
+1) Start the viewer (skip npm install if already built): `beast_logger_go`
+2) Open in browser: `http://localhost:8181`
+3) In the web UI, select your log directory (absolute path, created by `register_logger`).
+
+<div align="center">
+    <img width="500" alt="image" src="https://github.com/user-attachments/assets/5fa151d9-26e2-48ef-9565-ced714eb1617" />
+</div>
+
+
+## API Overview
+
+1. `print_list(list_like, ...)`
+    Log a Python list as a table.
+
+2. `print_dict(dict_like, ...)`
+    Log a flat dictionary as a two-column table.
+    ```python
+    print_dict(
+        { 'a': 1, 'b': 2, 'c': 3 },
+        mod="abc"
+    )
+    # ╭────────────────────────────────────────────────╮
+    # │ ┌──────────────────────┬─────────────────────┐ │
+    # │ │ a                    │ 1                   │ │
+    # │ ├──────────────────────┼─────────────────────┤ │
+    # │ │ b                    │ 2                   │ │
+    # │ ├──────────────────────┼─────────────────────┤ │
+    # │ │ c                    │ 3                   │ │
+    # │ └──────────────────────┴─────────────────────┘ │
+    # ╰────────────────────────────────────────────────╯
+    ```
+
+3. `print_listofdict(list_of_dicts, ...)`
+    Log a list of dictionaries as a row-wise table.
+    ```python
+    print_listofdict([
+        { 'a': 1, 'b': 2, 'c': 3 },
+        { 'a': 4, 'b': 5, 'c': 6 },
+    ], narrow=True)
+
+    # ╭────────────────────────────────────────────────╮
+    # │ ┏━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓ │
+    # │ ┃           ┃ a        ┃ b        ┃ c        ┃ │
+    # │ ┡━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩ │
+    # │ │ 0         │ 1        │ 2        │ 3        │ │
+    # │ ├───────────┼──────────┼──────────┼──────────┤ │
+    # │ │ 1         │ 4        │ 5        │ 6        │ │
+    # │ └───────────┴──────────┴──────────┴──────────┘ │
+    # ╰────────────────────────────────────────────────╯
+    ```
+
+4. `print_dictofdict(dict_of_dicts, ...)`
+    Log a nested dictionary (outer keys as rows, inner keys as columns).
+    ```python
+    # === log nested dictionaries as a table ===
+    print_dictofdict(
+        {
+            'sample-1': {
+                'a': 1,
+                'b': 2,
+                'c': 3,
+            },
+            'sample-2': {
+                'a': 4,
+                'b': 5,
+                'c': 6,
+            }
+        },
+        header="this is a header",
+        mod="",
+        attach="create a copy button in web log viewer, when clicked, copy this message into clipboard"
+    )
+    # ╭─────────────── this is a header ───────────────╮
+    # │ ┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━━━┓ │
+    # │ ┃                      ┃ a     ┃ b    ┃ c    ┃ │
+    # │ ┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━╇━━━━━━┩ │
+    # │ │ sample-1             │ 1     │ 2    │ 3    │ │
+    # │ ├──────────────────────┼───────┼──────┼──────┤ │
+    # │ │ sample-2             │ 4     │ 5    │ 6    │ │
+    # │ └──────────────────────┴───────┴──────┴──────┘ │
+    # ╰────────────────────────────────────────────────╯
+    ```
+
+5. `sprintf_nested_structure(obj)`
+    Render nested structures (dict/list) hierarchically in plain text.
+    Common options (where applicable):
+
+
+6. `print_tensor(t, ...)`
+  Logs shape, dtype, device, and a small preview.
+
+7. `print_tensor_dict({name: tensor, ...}, ...)`
+  Logs a dictionary of tensors; handles bad entries gracefully.
+
+Note: Requires torch installed if you use these functions.
+
+
+## License
+
+This project is distributed under a permissive open-source license. See the repository for details.
+
+<!--
+Maintainers: Build & Publish
+
+# Clean
+rm -rf build dist web_display_dist web_display/build web_display/dist beast_logger.egg-info best_logger.egg-info
+
+# Build web assets
+cd web_display
+nvm install 16
+nvm use 16
+npm install
+npm run build:all
+cd ..
+
+# Package
+mkdir -p web_display_dist
+mv web_display/build web_display_dist/build_pub
+python setup.py sdist bdist_wheel
+# Upload (requires credentials)
+# twine upload dist/*
 -->

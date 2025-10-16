@@ -6,12 +6,12 @@
 
 **Beast Logger** is optimized for English, Chinese and many other languages for best reading experience.
 
-## Demo
+## 〔Demo〕
 <div align="center">
     <img width="500" alt="image" align="center"  src="https://github.com/user-attachments/assets/d62b65c1-b076-4b0e-9962-896f889bd046" />
 </div>
 
-## Installation
+## 〔Installation〕
 
 Just run `pip install beast-logger` to install both beast-logger and its web viewer.
 

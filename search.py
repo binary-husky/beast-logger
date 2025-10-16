@@ -5,7 +5,7 @@ import json
 import zlib
 from datetime import datetime
 
-path = '/mnt/data/fuqingxu/root/ba-verl-v2/logs/2025_09_14_16_34_appworldqwen2-bz32-tp4-linear-think-1mini-hardpeneltymadness-nokl-resume6/rollout'
+path = '/mnt/data/.../root/ba-verl-v2/logs/2025_09_14_16_34_appworldqwen2-bz32-tp4-linear-think-1mini-hardpeneltymadness-nokl-resume6/rollout'
 
 # read rollout.json.*.log from path
 all_files = os.listdir(path)

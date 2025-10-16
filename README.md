@@ -1,6 +1,6 @@
 # Beast Logger
 
-**Beast Logger** is a simple but advanced logging module for Python data structures and tensors. It is built for, but not limited to, tracing the progress of all kind of Machine Learning (ML) algorithms, such as SFT, RLHF and GRPO.
+**Beast Logger** is a simple but advanced logging module for **Python** data structures and tensors. It is built for, but not limited to, tracing the progress of all kind of Machine Learning (ML) algorithms, such as SFT, RLHF and GRPO.
 
 **Beast Logger** renders all kinds of data (lists, dictionaries, list of dictionaries, dictionary of dictionaries, llm token array, etc) as rich, compact widgets in your terminal and web-based log interfaces. Additionally, it enables users to extract customizable text from each log entry, thereby enhancing reproducibility and simplifying debugging processes.
 

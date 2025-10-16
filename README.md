@@ -8,7 +8,7 @@
 
 ## Demo
 <div align="center">
-    <img width="500" alt="image" align="center"  src="doc/fig_tokens.png" />
+    <img width="500" alt="image" align="center"  src="https://github.com/user-attachments/assets/d62b65c1-b076-4b0e-9962-896f889bd046" />
 </div>
 
 ## Installation
@@ -177,6 +177,10 @@ Note: Requires torch installed if you use these functions.
 ## Token Logger
 
 Log and view complex llm token arrays.
+<div align="center">
+    <img width="500" alt="image" align="center"  src="https://github.com/user-attachments/assets/26dcf109-236c-4b41-95bd-98d9b68434dc" />
+</div>
+
 
 ```python
 # pip install beast-logger>=0.0.15

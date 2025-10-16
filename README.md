@@ -65,11 +65,21 @@ pip install dist/dist/beast_logger-{VERSION}-py3-none-any.whl
     ```python
     from beast_logger import register_logger, print_dict
     register_logger(mods=["demo"])
-    print_dict({
-        "a": 1,
-        "b": 2,
-        "c": 3,
-    }, mod="demo")
+    # register_logger(
+    #   mods=[],                # declare mods that you want to log to [console + file]
+    #   non_console_mods=[],    # declare mods that you want to log to [file] only
+    #   base_log_path="logs",   # where should the logs save to
+    #   auto_clean_mods=[],     # declare mods that you want to delete from disk (create new log rather than append to old log)
+    #   rotation="100 MB"       # max size of a single log file
+    # ):
+    print_dict(
+        {
+            "a": 1,
+            "b": 2,
+            "c": 3,
+        },
+        mod="demo"  # declare which mod (choose one of the sub log directory & decide whether to print to console), use mod='console' if you do not want to log to any file at all
+    )
     # ╭────────────────────────────────────────────────╮
     # │ ┌──────────────────────┬─────────────────────┐ │
     # │ │ a                    │ 1                   │ │

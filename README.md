@@ -95,9 +95,9 @@ pip install dist/dist/beast_logger-{VERSION}-py3-none-any.whl
 
 Browse your logs in a local web app and copy structured entries with one click.
 
-1) Start the viewer (skip npm install if already built): `beast_logger_go`
+1) Start the viewer: run `beast_logger_go` on the machine containing log files.
 2) Open in browser: `http://localhost:8181`
-3) In the web UI, select your log directory (absolute path, created by `register_logger`).
+3) In the web UI, select your log directory (absolute path containing log files, the log path is defined in `register_logger(...)`).
 
 <div align="center">
     <img width="500" alt="image" src="https://github.com/user-attachments/assets/5fa151d9-26e2-48ef-9565-ced714eb1617" />

@@ -10,7 +10,7 @@ interface SimpleBadgeProps {
 const SimpleBadge: React.FC<SimpleBadgeProps> = ({ text, count, color, title }) => {
   return (
     <div
-      title={String(count)}
+      title={String(title)}
       style={{
         display: 'inline-block',
         textAlign: 'center',

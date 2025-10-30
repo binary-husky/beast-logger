@@ -3,7 +3,7 @@ import re
 import os
 
 def get_version():
-    version_match = "0.1.0"
+    version_match = "0.1.1"
     return version_match
 
 version = get_version()
@@ -13,7 +13,8 @@ def package_files(directory, black_list):
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
             if not any([(k in filename or k in path) for k in black_list]):
-                paths.append(os.path.join('..', path, filename))
+                fp = os.path.join('..', path, filename)
+                paths.append(fp)
             else:
                 print('ignore', filename)
     return paths

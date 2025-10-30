@@ -85,12 +85,14 @@ def _parse_after_datetime(s: Optional[str]) -> Optional[datetime]:
 
 def _scan_log_files(dir_path: str, after_datatime: Optional[str]) -> List[Dict[str, Any]]:
     files: List[Dict[str, Any]] = []
+
+    LIMIT = 60 if after_datatime is not None else 9999
     after_datatime = None # force no filter
+
     after_dt = _parse_after_datetime(after_datatime)
     if not os.path.exists(dir_path):
         return files
 
-    LIMIT = 60
 
     def dfs(current_dir: str):
         if len(files) >= LIMIT:

@@ -255,6 +255,7 @@ cd ..
 mkdir -p web_display_dist
 mv web_display/build web_display_dist/build_pub
 python setup.py sdist bdist_wheel
+
 # Upload (requires credentials)
-# twine upload dist/*
+twine upload dist/*
 -->

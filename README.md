@@ -37,7 +37,7 @@ pip install beast-logger -i https://mirrors.aliyun.com/pypi/simple/
 ```bash
 rm -rf build dist web_display_dist
 rm -rf web_display/build web_display/dist
-rm -rf beast_logger.egg-info best_logger.egg-info
+rm -rf beast_logger.egg-info beast_logger.egg-info
 
 # Build web assets
 cd web_display
@@ -197,7 +197,7 @@ Note: Requires torch installed if you use these functions.
 1. Log and view complex llm token arrays.
     ```python
     # pip install beast-logger>=0.0.15
-    from best_logger import *
+    from beast_logger import *
     # Define a log path named 'abc'
     register_logger(mods=["abc"], base_log_path="./logs")
     # Collect items into a dictionary
@@ -241,7 +241,7 @@ Note: Requires torch installed if you use these functions.
 Maintainers: Build & Publish
 
 # Clean
-rm -rf build dist web_display_dist web_display/build web_display/dist beast_logger.egg-info best_logger.egg-info
+rm -rf build dist web_display_dist web_display/build web_display/dist beast_logger.egg-info beast_logger.egg-info
 
 # Build web assets
 cd web_display

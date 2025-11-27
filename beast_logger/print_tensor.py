@@ -9,8 +9,8 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from functools import partial
-from best_logger.register import register_logger, LoggerConfig
-from best_logger.print_basic import print_dict, print_dictofdict, rich2text, _log_final_exe
+from beast_logger.register import register_logger, LoggerConfig
+from beast_logger.print_basic import print_dict, print_dictofdict, rich2text, _log_final_exe
 
 PREVIEW_CONTENT_LIMIT = 500
 
@@ -22,7 +22,7 @@ def len_limit(content):
 
 def print_tensor(tensor: 'torch.Tensor', header: str = "", mod: str = "", narrow: bool = False, attach: None = None) -> None:
     """
-    Prints the details of a tensor in a formatted manner using Rich. 
+    Prints the details of a tensor in a formatted manner using Rich.
 
     Args:
         tensor (torch.Tensor): The tensor object to display.
@@ -47,7 +47,7 @@ def print_tensor(tensor: 'torch.Tensor', header: str = "", mod: str = "", narrow
 def print_tensor_dict(tensor_dict: dict, header: str = "", mod: str = "", narrow: bool = False, attach: None = None) -> None:
     """
     Prints the details of tensors stored in a dictionary in a formatted manner using Rich.
-    
+
     Args:
         tensor_dict (dict): Dictionary with tensor names as keys and tensor objects as values.
         header (str): Additional information to display as a header.

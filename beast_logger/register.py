@@ -101,21 +101,21 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
     # logger.add(sys.stderr, format=formatter_with_clip, colorize=True, enqueue=True, filter=is_not_non_console_mod)
     logger.add(sys.stderr, colorize=True, enqueue=False, filter=is_not_non_console_mod)
 
-    best_logger_web_service_url = os.environ.get("BEST_LOGGER_WEB_SERVICE_URL", None)
+    beast_logger_web_service_url = os.environ.get("beast_logger_WEB_SERVICE_URL", None)
     if not registered_before:
         logger.warning(f"\n********************************\n"
                     f"Run following command (in another console) to serve logs with web viewer:\n\t`beast_logger_install`"
                     f"\n********************************\n"
         )
-    if best_logger_web_service_url:
-        if not best_logger_web_service_url.startswith("http"):
-            raise ValueError("BEST_LOGGER_WEB_SERVICE_URL must start with http or https")
-        if not best_logger_web_service_url.endswith("/"):
-            best_logger_web_service_url += "/"
+    if beast_logger_web_service_url:
+        if not beast_logger_web_service_url.startswith("http"):
+            raise ValueError("beast_logger_WEB_SERVICE_URL must start with http or https")
+        if not beast_logger_web_service_url.endswith("/"):
+            beast_logger_web_service_url += "/"
         abs_path = os.path.abspath(base_log_path)
         logger.warning(
             f"\n********************************\n"
-            f"Log will be served at:\n\t{best_logger_web_service_url}?path={abs_path}"
+            f"Log will be served at:\n\t{beast_logger_web_service_url}?path={abs_path}"
             f"\n********************************\n"
         )
         time.sleep(2)

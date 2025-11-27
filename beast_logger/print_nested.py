@@ -9,8 +9,8 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from functools import partial
-from best_logger.register import register_logger, LoggerConfig
-from best_logger.print_basic import print_dict, print_dictofdict, rich2text, _log_final_exe, _log_final_exe_nested
+from beast_logger.register import register_logger, LoggerConfig
+from beast_logger.print_basic import print_dict, print_dictofdict, rich2text, _log_final_exe, _log_final_exe_nested
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Dict, Any, Union
 

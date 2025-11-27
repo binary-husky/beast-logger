@@ -1,4 +1,4 @@
-from best_logger import *
+from beast_logger import *
 
 register_logger(mods=["abc"])
 # logger.info = lambda x: print_dict({"content": x}, header="info Log", mod="abc")

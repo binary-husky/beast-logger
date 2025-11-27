@@ -1,5 +1,5 @@
 # first do a monkey patch, this must be import first
-import best_logger.apply_monkey_patch
+import beast_logger.apply_monkey_patch
 import rich, json, time
 from loguru import logger
 from io import StringIO
@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from functools import partial
-from best_logger.register import register_logger, LoggerConfig
+from beast_logger.register import register_logger, LoggerConfig
 import zlib, base64
 
 def formatter_with_clip(record: dict) -> str:

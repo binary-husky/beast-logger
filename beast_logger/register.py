@@ -36,21 +36,20 @@ def install_lock_file():
         with open(lock_file_path, "r") as f:
             pid = f.read().strip()
         if pid and int(pid) != os.getpid():
-            # check whether this pid is running
             try:
+                # check whether this pid is running
                 os.kill(int(pid), 0)
             except OSError:
-                # 如果进程不存在，则删除锁文件
+                # process is not running, remove the lock file
                 os.remove(lock_file_path)
                 print('removing outdated lock')
             else:
+                # process is running
                 this_pid = os.getpid()
                 if base_log_path.endswith("/"):
                     base_log_path = base_log_path[:-1]
                 base_log_path = base_log_path + f"_{this_pid}"
                 print(f"Logger is already running with PID {pid}. Using a new directory: {base_log_path} for `base_log_path`.")
-                # # 如果进程存在，则抛出异常
-                # raise RuntimeError(f"Logger is already running with PID {pid}. Please use another directory for `base_log_path`.")
         if pid and int(pid) == os.getpid():
             print('updating logger running inside same process')
     with open(lock_file_path, "w+") as f:
@@ -98,13 +97,13 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
         return False
 
     logger.remove()
-    # logger.add(sys.stderr, format=formatter_with_clip, colorize=True, enqueue=True, filter=is_not_non_console_mod)
-    logger.add(sys.stderr, colorize=True, enqueue=False, filter=is_not_non_console_mod)
+    colorize = os.environ.get("LOGURU_COLORIZE", "YES").upper() not in ["NO", "0", "FALSE"]
+    logger.add(sys.stderr, colorize=colorize, enqueue=False, filter=is_not_non_console_mod)
 
     beast_logger_web_service_url = os.environ.get("beast_logger_WEB_SERVICE_URL", None)
     if not registered_before:
         logger.warning(f"\n********************************\n"
-                    f"Run following command (in another console) to serve logs with web viewer:\n\t`beast_logger_install`"
+                    f"Run following command (in another console) to serve logs with web viewer:\n\t`beast_logger_go`"
                     f"\n********************************\n"
         )
     if beast_logger_web_service_url:
@@ -123,7 +122,7 @@ def register_logger(mods=[], non_console_mods=[], base_log_path="logs", auto_cle
         abs_path = os.path.abspath(base_log_path)
         logger.warning(
             f"\n********************************\n"
-            f"Note: If you run `beast_logger_install` in another console, you can open and view logs at url:\n\thttp://localhost:8181/?path={abs_path}"
+            f"Note: If you run `beast_logger_go` in another console, you can open and view logs at url:\n\thttp://localhost:8181/?path={abs_path}"
             f"\n********************************\n"
         )
         time.sleep(2)

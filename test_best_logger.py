@@ -21,7 +21,7 @@ register_logger(mods=["abc"])
 #     }
 # }, narrow=True, header="this is a header", mod="abc", attach="create a copy button in web log viewer, when clicked, copy this message into clipboard")
 
-# # 输出
+# # Output
 # # ╭────────────────────────────────────────────────╮
 # # │ ┌──────────────────────┬─────────────────────┐ │
 # # │ │ a                    │ 1                   │ │
@@ -44,7 +44,7 @@ register_logger(mods=["abc"])
 #         "c": 6,
 #     }
 # }, narrow=True)
-# # 输出
+# # Output
 # # ╭────────────────────────────────────────────────╮
 # # │ ┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━━━┓ │
 # # │ ┃                      ┃ a     ┃ b    ┃ c    ┃ │
@@ -69,7 +69,7 @@ register_logger(mods=["abc"])
 #         "c": 6,
 #     }], narrow=True)
 
-# # 输出
+# # Output
 # # ╭────────────────────────────────────────────────╮
 # # │ ┏━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓ │
 # # │ ┃           ┃ a        ┃ b        ┃ c        ┃ │

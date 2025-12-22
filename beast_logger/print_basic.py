@@ -9,7 +9,8 @@ from rich.table import Table
 from rich.text import Text
 from functools import partial
 from beast_logger.register import register_logger, LoggerConfig
-import zlib, base64
+import zlib, base64, os, sys
+from typing import Optional
 
 def formatter_with_clip(record: dict) -> str:
     """
@@ -28,6 +29,66 @@ def formatter_with_clip(record: dict) -> str:
     record['line_x'] = str(record['line']).ljust(3)
     return '<green>{time:HH:mm}</green> | <cyan>{function_x}</cyan>:<cyan>{line_x}</cyan> | <level>{message}</level>\n'
 
+
+WINDOWS = sys.platform.startswith("win")
+MAX_WIDTH = 140
+CONSOLE_WIDTH_CACHE = {
+    "time": 0,
+    "width": MAX_WIDTH,
+}
+
+def get_console_width() -> int:
+
+    if time.time() - CONSOLE_WIDTH_CACHE["time"] < 2:
+        return CONSOLE_WIDTH_CACHE["width"]
+
+    width: Optional[int] = None
+    height: Optional[int] = None
+
+    try:
+        _STDIN_FILENO = sys.__stdin__.fileno()
+    except Exception:
+        _STDIN_FILENO = 0
+    try:
+        _STDOUT_FILENO = sys.__stdout__.fileno()
+    except Exception:
+        _STDOUT_FILENO = 1
+    try:
+        _STDERR_FILENO = sys.__stderr__.fileno()
+    except Exception:
+        _STDERR_FILENO = 2
+
+    _STD_STREAMS = (_STDIN_FILENO, _STDOUT_FILENO, _STDERR_FILENO)
+
+    if WINDOWS:  # pragma: no cover
+        try:
+            width, height = os.get_terminal_size()
+        except (AttributeError, ValueError, OSError):  # Probably not a terminal
+            pass
+    else:
+        for file_descriptor in _STD_STREAMS:
+            try:
+                width, height = os.get_terminal_size(file_descriptor)
+            except (AttributeError, ValueError, OSError):
+                pass
+            else:
+                break
+
+    columns = os.environ.get("COLUMNS")
+    if columns is not None and columns.isdigit():
+        width = int(columns)
+    lines = os.environ.get("LINES")
+    if lines is not None and lines.isdigit():
+        height = int(lines)
+
+    # get_terminal_size can report 0, 0 if run from pseudo-terminal
+    width = width or 80
+    height = height or 25
+
+    CONSOLE_WIDTH_CACHE["time"] = time.time()
+    CONSOLE_WIDTH_CACHE["width"] = width
+    return width
+
 def rich2text(rich_elem, narrow: bool = False) -> str:
     """
     Convert a rich element to plain text.
@@ -40,7 +101,10 @@ def rich2text(rich_elem, narrow: bool = False) -> str:
         str: The plain text representation of the rich element.
     """
     output = StringIO()
-    console = Console(record=True, file=output, width=150 if not narrow else 50)
+    width = get_console_width() if not narrow else 50
+    if width > MAX_WIDTH:
+        width = MAX_WIDTH
+    console = Console(record=True, file=output, width=width)
     console.print(rich_elem)
     text = console.export_text()
     del console

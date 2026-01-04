@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Layout, Modal, Input, Button } from 'antd';
+import { Layout, Modal, Flex, Input, Button, Splitter } from 'antd';
 import LogFileList from './components/LogFileList';
 import LogViewer from './components/LogViewer';
 import { LogFile, LogEntry } from './types';
@@ -20,6 +20,8 @@ function App() {
   const [showPathInput, setShowPathInput] = useState(false);
   const [pathInput, setPathInput] = useState('');
   const [incrementalFiles, setIncrementalFiles] = useState<LogFile[]>([]);
+  const [sizes, setSizes] = React.useState<(number | string)[]>(['15%', '85%']);
+
 
   const PAGE_SIZE = 15;
 
@@ -203,43 +205,54 @@ function App() {
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
-        <Sider width={200} theme="light">
-          {/* 这是文件选择栏 */}
-          <LogFileList
-            files={files}
-            onFileSelect={handleFileSelect}
-            selectedFile={selectedFile}
-          />
-        </Sider>
-        <Content>
-          {/* 这是日志展示栏，包括条目选择侧边栏和展示 */}
-          {selectedFile ? (
-            <LogViewer
-              entries={logEntries}
-              isLoading={isLoading}
-              onPageChange={(page) => {
-                setCurrentPage(page);
-                if (selectedFile) {
-                  readLogFile(selectedFile, page);
-                }
-              }}
-              totalEntries={totalEntries}
-              currentPage={currentPage}
-            />
-          ) : (
-            // 没有选择文件时的空状态
-            <div style={{
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '16px',
-              color: '#999',
-            }}>
-              Select a log file to view its contents
-            </div>
-          )}
-        </Content>
+        <Flex vertical gap="middle">
+          <Splitter
+            onResize={setSizes}
+            style={{ height: '100%', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}
+          >
+            <Splitter.Panel size={sizes[0]}>
+              <div style={{ height: '100%', background: '#fff' }}>
+                {/* 这是文件选择栏 */}
+                <LogFileList
+                  files={files}
+                  onFileSelect={handleFileSelect}
+                  selectedFile={selectedFile}
+                />
+              </div>
+            </Splitter.Panel>
+            <Splitter.Panel size={sizes[1]}>
+              <Content>
+                {/* 这是日志展示栏，包括条目选择侧边栏和展示 */}
+                {selectedFile ? (
+                  <LogViewer
+                    entries={logEntries}
+                    isLoading={isLoading}
+                    onPageChange={(page) => {
+                      setCurrentPage(page);
+                      if (selectedFile) {
+                        readLogFile(selectedFile, page);
+                      }
+                    }}
+                    totalEntries={totalEntries}
+                    currentPage={currentPage}
+                  />
+                ) : (
+                  // 没有选择文件时的空状态
+                  <div style={{
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '16px',
+                    color: '#999',
+                  }}>
+                    Select a log file to view its contents
+                  </div>
+                )}
+              </Content>
+            </Splitter.Panel>
+          </Splitter>
+        </Flex>
       </Layout>
 
       {/* Path Input Modal */}

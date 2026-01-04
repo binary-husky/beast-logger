@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Badge, Button, Checkbox, Col, Row, Table, Pagination, Tooltip } from 'antd';
 import type { TableColumnsType } from 'antd';
 import type { GetProp } from 'antd';
-import { CopyOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
+import { CopyOutlined, DownOutlined, InfoOutlined, RightOutlined } from '@ant-design/icons';
 import { LogEntry } from '../types';
 import SimpleBadge from './SimpleBadge';
 import DisplayToggleWrapper from './DisplayToggleWrapper';
@@ -72,8 +72,8 @@ const MessageComponent: React.FC<MessageComponentProps> = React.memo(({
           display: 'flex',
           alignItems: 'center',
           marginBottom: '8px',
-          padding: '8px 12px',
-          backgroundColor: isCollapsed ? '#e6f7ff': '#f5f5f5',
+          padding: '4px 12px',
+          backgroundColor: isCollapsed ? '#e6f7ff' : '#f5f5f5',
           borderRadius: '4px',
           cursor: 'pointer',
           userSelect: 'none'
@@ -90,7 +90,7 @@ const MessageComponent: React.FC<MessageComponentProps> = React.memo(({
       {!isCollapsed && (
         <Row gutter={24} style={{ marginBottom: '8px' }}>
           {showPureText &&
-            <Col span={showRichText?12:24}>
+            <Col span={showRichText ? 12 : 24}>
               <div style={{
                 maxHeight: '1500px',
                 overflowY: 'auto',
@@ -110,7 +110,7 @@ const MessageComponent: React.FC<MessageComponentProps> = React.memo(({
             </Col>
           }
           {showRichText &&
-            <Col span={showPureText?12:24}>
+            <Col span={showPureText ? 12 : 24}>
               <div style={{
                 maxHeight: '1500px',
                 overflowY: 'auto',
@@ -163,6 +163,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [selectedRowContent, setSelectedRowContent] = useState<string>('');
+  const [showTableFilter, setShowTableFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(() => {
     const saved = localStorage.getItem('nestedEntryViewer_pageSize');
@@ -410,8 +411,19 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
     localStorage.setItem('nestedEntryViewer_showPureText', JSON.stringify(showPureText));
   }, [showPureText]);
 
+  const toggleTableFilter = () => {
+    setShowTableFilter(prev => !prev);
+  };
+
   return (
-    <div>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        padding: '4px',
+      }}
+    >
       <div style={{ marginBottom: '16px' }}>
         <div style={{ color: selectedEntry.color || getLevelColor(selectedEntry.level), fontWeight: 'bold' }}>
           [{selectedEntry.level}] {selectedEntry.header || selectedEntry.message}
@@ -420,65 +432,81 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
         <div style={{ color: '#666', marginTop: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>{selectedEntry.timestamp}</span>
           {selectedEntry.attach && (
-            <Button
-              type="primary"
-              size="small"
-              icon={<CopyOutlined />}
-              onClick={(e) => {
-                e.stopPropagation();
-                copyAttachToClipboard();
-              }}
-            >
-              Copy Attach
-            </Button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Button
+                type="default"
+                size="small"
+                icon={<CopyOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyAttachToClipboard();
+                }}
+              >
+                Copy Attach
+              </Button>
+              <Button
+                type="default"
+                size="small"
+                icon={<InfoOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleTableFilter();
+                }}
+              >
+                Table Filter
+              </Button>
+            </div>
+
           )}
         </div>
       </div>
 
       {/* selector checkboxes - side by side layout */}
-      <Row gutter={24} style={{ marginBottom: '16px' }}>
-        {/* control display table rows */}
-        <Col span={15}>
-          <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>control display table items</div>
-          <div style={{ marginBottom: '16px' }}>
-            <Checkbox.Group
-              style={{ width: '100%' }}
-              value={selectedSelectors}
-              onChange={onSelectorsChange}>
-              <Row>
-                {selectors.map((selector) => (
-                  <Col span={12} key={selector}>
-                    <Checkbox value={selector}>{selector}</Checkbox>
-                  </Col>
-                ))}
-              </Row>
-            </Checkbox.Group>
-          </div>
-        </Col>
-        <Col span={1}>
-          {/* add verticle line line */}
-          <div style={{ borderLeft: '1px solid #e8e8e8', height: '100%' }}></div>
-        </Col>
+      {showTableFilter && (
+        <Row gutter={24} style={{ marginBottom: '16px' }}>
+          {/* control display table rows */}
+          <Col span={15}>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>control display table items</div>
+            <div style={{ marginBottom: '16px' }}>
+              <Checkbox.Group
+                style={{ width: '100%' }}
+                value={selectedSelectors}
+                onChange={onSelectorsChange}>
+                <Row>
+                  {selectors.map((selector) => (
+                    <Col span={12} key={selector}>
+                      <Checkbox value={selector}>{selector}</Checkbox>
+                    </Col>
+                  ))}
+                </Row>
+              </Checkbox.Group>
+            </div>
+          </Col>
+          <Col span={1}>
+            {/* add verticle line line */}
+            <div style={{ borderLeft: '1px solid #e8e8e8', height: '100%' }}></div>
+          </Col>
 
-        {/* control display table cols */}
-        <Col span={8}>
-          <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>control display table cols</div>
-          <div style={{ marginBottom: '16px' }}>
-            <Checkbox.Group
-              style={{ width: '100%' }}
-              value={selectedColumns}
-              onChange={onColumnsChange}>
-              <Row>
-                {availableColumns.map((column) => (
-                  <Col span={12} key={column}>
-                    <Checkbox value={column}>{column}</Checkbox>
-                  </Col>
-                ))}
-              </Row>
-            </Checkbox.Group>
-          </div>
-        </Col>
-      </Row>
+          {/* control display table cols */}
+          <Col span={8}>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>control display table cols</div>
+            <div style={{ marginBottom: '16px' }}>
+              <Checkbox.Group
+                style={{ width: '100%' }}
+                value={selectedColumns}
+                onChange={onColumnsChange}>
+                <Row>
+                  {availableColumns.map((column) => (
+                    <Col span={12} key={column}>
+                      <Checkbox value={column}>{column}</Checkbox>
+                    </Col>
+                  ))}
+                </Row>
+              </Checkbox.Group>
+            </div>
+          </Col>
+        </Row>
+      )}
 
 
       {/* display table */}
@@ -515,6 +543,20 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
           pagination={false}
         />
       </div>
+
+
+      {!selectedRowContent &&
+        <div style={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '24px',
+          color: '#999'
+        }}>
+          Click a row's "selector" link to view its content here.
+        </div>
+      }
 
       {/* main content selected*/}
       {selectedRowContent && (() => {
@@ -586,27 +628,30 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
         );
       })()}
 
-
       {/* main content */}
-      <pre
-        ref={logContentRef}
-        style={{
-          margin: 0,
-          whiteSpace: 'pre',
-          overflowX: 'auto',
-          backgroundColor: '#fff',
-          padding: '5px',
-          borderRadius: '4px',
-          border: '1px solid #f0f0f0',
-          fontFamily: 'ChineseFont, ChineseFontBold, "DejaVu Sans Mono", Consolas, monospace',
-          textTransform: 'none',
-          fontVariantEastAsian: 'none',
-          fontKerning: 'none',
-          fontFeatureSettings: 'normal',
-          fontSize: `${fontSize}px`
-        }}>
-        {selectedEntry.true_content || selectedEntry.content}
-      </pre>
+      {showTableFilter && (
+        <pre
+          ref={logContentRef}
+          style={{
+            margin: 0,
+            whiteSpace: 'pre',
+            overflowX: 'auto',
+            backgroundColor: '#fff',
+            borderRadius: '4px',
+            border: '1px solid #f0f0f0',
+            fontFamily: 'ChineseFont, ChineseFontBold, "DejaVu Sans Mono", Consolas, monospace',
+            textTransform: 'none',
+            fontVariantEastAsian: 'none',
+            fontKerning: 'none',
+            fontFeatureSettings: 'normal',
+            fontSize: `${fontSize}px`
+          }}>
+          {selectedEntry.true_content || selectedEntry.content}
+        </pre>
+
+      )}
+
+
     </div>
   );
 };

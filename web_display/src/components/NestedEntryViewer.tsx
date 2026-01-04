@@ -167,7 +167,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(() => {
     const saved = localStorage.getItem('nestedEntryViewer_pageSize');
-    return saved ? parseInt(saved, 10) : 700;
+    return saved ? parseInt(saved, 10) : 2000;
   });
   const [showRichText, setShowRichText] = useState(() => {
     const saved = localStorage.getItem('nestedEntryViewer_showRichText');
@@ -579,7 +579,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
                   total={data.text.length}
                   pageSize={pageSize}
                   showSizeChanger
-                  pageSizeOptions={[100, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000, 5000, 10000, 20000, 50000, 999999999]}
+                  pageSizeOptions={[500, 700, 1000, 1500, 2000, 3000, 5000, 10000, 20000, 50000, 999999999]}
                   style={{ marginTop: '8px' }}
                 />
 

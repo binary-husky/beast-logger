@@ -88,45 +88,54 @@ const MessageComponent: React.FC<MessageComponentProps> = React.memo(({
 
       {/* Message Content */}
       {!isCollapsed && (
-        <Row gutter={24} style={{ marginBottom: '8px' }}>
-          {showPureText &&
-            <Col span={showRichText ? 12 : 24}>
-              <div style={{
-                maxHeight: '1500px',
-                overflowY: 'auto',
-                borderRadius: '4px',
-                border: '1px solid #000000ff', padding: '1px', marginBottom: '16px'
-              }}>
-                {message.map((paragraph_block, paraIndex) => (
-                  <p key={`paragraph-${msgIndex}-${paraIndex}`} style={paragraphStyle}>
-                    <span style={{ whiteSpace: 'pre-wrap' }}>
-                      {paragraph_block.currentText && paragraph_block.currentText.length > 0
-                        ? paragraph_block.currentText.join('')
-                        : ''}
-                    </span>
-                  </p>
-                ))}
-              </div>
-            </Col>
-          }
-          {showRichText &&
-            <Col span={showPureText ? 12 : 24}>
-              <div style={{
-                maxHeight: '1500px',
-                overflowY: 'auto',
-                borderRadius: '4px',
-                border: '1px solid #000000ff', padding: '1px', marginBottom: '16px'
 
-              }}>
-                {message.map((paragraph_block, paraIndex) => (
-                  <p key={`rich-paragraph-${msgIndex}-${paraIndex}`} style={smallParagraphStyle}>
-                    {paragraph_block.currentParagraph}
-                  </p>
-                ))}
-              </div>
-            </Col>
-          }
-        </Row>
+          <div
+            className="one-message-content"
+          >
+            <Row gutter={24} style={{ marginBottom: '8px', marginLeft: '0px', marginRight: '0px' }}>
+              {showPureText &&
+                <Col span={showRichText ? 12 : 24} style={{
+                  paddingLeft: '4px',
+                  paddingRight: '4px',
+                }}>
+                  <div style={{
+                    maxHeight: '1500px',
+                    overflowY: 'auto',
+                    borderRadius: '4px',
+                    border: '1px solid #000000ff', padding: '1px', marginBottom: '16px'
+                  }}>
+                    {message.map((paragraph_block, paraIndex) => (
+                      <p key={`paragraph-${msgIndex}-${paraIndex}`} style={paragraphStyle}>
+                        <span style={{ whiteSpace: 'pre-wrap' }}>
+                          {paragraph_block.currentText && paragraph_block.currentText.length > 0
+                            ? paragraph_block.currentText.join('')
+                            : ''}
+                        </span>
+                      </p>
+                    ))}
+                  </div>
+                </Col>
+              }
+              {showRichText &&
+                <Col span={showPureText ? 12 : 24}>
+                  <div style={{
+                    maxHeight: '1500px',
+                    overflowY: 'auto',
+                    borderRadius: '4px',
+                    border: '1px solid #000000ff', padding: '1px', marginBottom: '16px'
+
+                  }}>
+                    {message.map((paragraph_block, paraIndex) => (
+                      <p key={`rich-paragraph-${msgIndex}-${paraIndex}`} style={smallParagraphStyle}>
+                        {paragraph_block.currentParagraph}
+                      </p>
+                    ))}
+                  </div>
+                </Col>
+              }
+            </Row>
+          </div>
+
       )}
     </div>
   );
@@ -177,20 +186,6 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
     const saved = localStorage.getItem('nestedEntryViewer_showPureText');
     return saved ? JSON.parse(saved) : true;
   });
-
-  // Styles for paragraphs
-  const paragraphStyle: React.CSSProperties = {
-    display: "flex",
-    gap: "4px",
-    flexWrap: "wrap",
-    margin: "0px 0px 10px 0px"
-  };
-  const smallParagraphStyle: React.CSSProperties = {
-    display: "flex",
-    gap: "4px",
-    flexWrap: "wrap",
-    margin: "0px 0px 0px 0px"
-  };
 
   const fallbackPreStyle: React.CSSProperties = {
     margin: '0 0 16px 0',
@@ -433,6 +428,21 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
           <span>{selectedEntry.timestamp}</span>
           {selectedEntry.attach && (
             <div style={{ display: 'flex', gap: '8px' }}>
+              <Checkbox
+                checked={showRichText}
+                onChange={e => setShowRichText(e.target.checked)}
+                style={{ marginRight: '16px' }}
+              >
+                Rich Text Display
+              </Checkbox>
+              <Checkbox
+                checked={showPureText}
+                onChange={e => setShowPureText(e.target.checked)}
+              >
+                Pure Text Display
+              </Checkbox>
+
+
               <Button
                 type="default"
                 size="small"
@@ -545,7 +555,7 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
       </div>
 
 
-      {!selectedRowContent &&
+      {!showTableFilter && !selectedRowContent &&
         <div style={{
           height: '100%',
           display: 'flex',
@@ -554,9 +564,11 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
           fontSize: '24px',
           color: '#999'
         }}>
-          Click a row's "selector" link to view its content here.
+          🔼 Click a row's "<span style={{ color: '#1890ff' }}>Selector</span>" link to view its content here.
         </div>
       }
+
+
 
       {/* main content selected*/}
       {selectedRowContent && (() => {
@@ -569,51 +581,59 @@ const NestedEntryViewer: React.FC<EntryViewerProps> = ({
 
             return (
               <div>
-                <Pagination
-                  current={currentPage}
-                  onChange={(page) => setCurrentPage(page)}
-                  onShowSizeChange={(current, size) => {
-                    setPageSize(size);
-                    setCurrentPage(1);
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'stretch'
                   }}
-                  total={data.text.length}
-                  pageSize={pageSize}
-                  showSizeChanger
-                  pageSizeOptions={[500, 700, 1000, 1500, 2000, 3000, 5000, 10000, 20000, 50000, 999999999]}
-                  style={{ marginTop: '8px' }}
-                />
-
-                <div style={{ marginBottom: '16px' }}>
-                  <Checkbox
-                    checked={showRichText}
-                    onChange={e => setShowRichText(e.target.checked)}
-                    style={{ marginRight: '16px' }}
-                  >
-                    Rich Text Display
-                  </Checkbox>
-                  <Checkbox
-                    checked={showPureText}
-                    onChange={e => setShowPureText(e.target.checked)}
-                  >
-                    Pure Text Display
-                  </Checkbox>
+                >
+                  <Pagination
+                    size="small"
+                    current={currentPage}
+                    onChange={(page) => setCurrentPage(page)}
+                    onShowSizeChange={(current, size) => {
+                      setPageSize(size);
+                      setCurrentPage(1);
+                    }}
+                    total={data.text.length}
+                    pageSize={pageSize}
+                    showSizeChanger
+                    pageSizeOptions={[500, 700, 1000, 1500, 2000, 3000, 5000, 10000, 20000, 50000, 999999999]}
+                    style={{ marginBottom: '12px' }}
+                  />
+                  <div style={{ marginLeft: '12px' }}>◀ select page & n-token per page</div>
                 </div>
-                <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", flexDirection: "column", width: "100%" }}>
+
+
+                <div
+                  className="message-content-container"
+                  style={{ display: "flex", gap: "4px", flexWrap: "wrap", flexDirection: "column", width: "100%"}}>
                   {processContent(data, startIndex, endIndex)}
                 </div>
-                <Pagination
-                  current={currentPage}
-                  onChange={(page) => setCurrentPage(page)}
-                  onShowSizeChange={(current, size) => {
-                    setPageSize(size);
-                    setCurrentPage(1);
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center'
                   }}
-                  total={data.text.length}
-                  pageSize={pageSize}
-                  showSizeChanger
-                  pageSizeOptions={[100, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000, 5000, 10000, 20000, 50000, 999999999]}
-                  style={{ marginTop: '8px' }}
-                />
+                >
+                    <Pagination
+                      current={currentPage}
+                      onChange={(page) => setCurrentPage(page)}
+                      onShowSizeChange={(current, size) => {
+                        setPageSize(size);
+                        setCurrentPage(1);
+                      }}
+                      total={data.text.length}
+                      pageSize={pageSize}
+                      showSizeChanger
+                      pageSizeOptions={[100, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000, 5000, 10000, 20000, 50000, 999999999]}
+                      style={{ marginTop: '8px', marginBottom: '12px' }}
+                      size="small"
+                    />
+                </div>
               </div>
             );
           }

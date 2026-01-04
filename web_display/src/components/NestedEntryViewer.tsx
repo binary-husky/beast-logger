@@ -73,7 +73,7 @@ const MessageComponent: React.FC<MessageComponentProps> = React.memo(({
           alignItems: 'center',
           marginBottom: '8px',
           padding: '8px 12px',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: isCollapsed ? '#e6f7ff': '#f5f5f5',
           borderRadius: '4px',
           cursor: 'pointer',
           userSelect: 'none'

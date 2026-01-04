@@ -4,6 +4,7 @@ import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons
 import { LogEntry } from '../types';
 import EntryViewer from './EntryViewer';
 import NestedEntryViewer from './NestedEntryViewer';
+import ScrollButtons from './ScrollButtons';
 import { sortLogEntries } from '../utils/logParser';
 import { Layout, Modal, Flex, Input, Splitter } from 'antd';
 
@@ -320,63 +321,13 @@ const LogViewer: React.FC<LogViewerProps> = ({
                   flex: '1',
                   minWidth: '200px',
                   padding: '5px',
-                  height: '100%',
+                  height: '100vh',
                   overflowY: 'auto',
                   backgroundColor: '#ffffffff',
                   position: 'relative',
                 }}
               >
-                {/* Floating go top/bottom buttons */}
-                <div style={{
-                  position: 'fixed',
-                  right: '40px',
-                  bottom: '120px',
-                  zIndex: 2000,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                }}>
-                  <button
-                    onClick={scrollToTop}
-                    style={{
-                      background: 'rgba(255,255,255,0.9)',
-                      border: '1px solid #ccc',
-                      borderRadius: '50%',
-                      width: '40px',
-                      height: '40px',
-                      fontSize: '22px',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'background 0.2s',
-                    }}
-                    title="Go Top"
-                  >
-                    <span style={{ display: 'inline-block', transform: 'translateY(-2px)' }}>▲</span>
-                  </button>
-                  <button
-                    onClick={scrollToBottom}
-                    style={{
-                      background: 'rgba(255,255,255,0.9)',
-                      border: '1px solid #ccc',
-                      borderRadius: '50%',
-                      width: '40px',
-                      height: '40px',
-                      fontSize: '22px',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'background 0.2s',
-                    }}
-                    title="Go Bottom"
-                  >
-                    <span style={{ display: 'inline-block', transform: 'translateY(2px)' }}>▼</span>
-                  </button>
-                </div>
+                <ScrollButtons scrollToTop={scrollToTop} scrollToBottom={scrollToBottom} />
                 {selectedEntry ? (
                   selectedEntry.nested ? (
                     <NestedEntryViewer

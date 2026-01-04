@@ -7,7 +7,6 @@ import { parseLogContent } from './utils/logParser';
 import pako from 'pako';
 
 const { Sider, Content } = Layout;
-const FPORT = process.env.REACT_APP_FPORT || 9999;
 
 function App() {
   const [files, setFiles] = useState<LogFile[]>([]);
